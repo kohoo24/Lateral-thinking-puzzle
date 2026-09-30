@@ -1,0 +1,23 @@
+{
+  "name": "answer-in-light",
+  "version": "1.0.0",
+  "description": "Answer in Light 게임 클라이언트",
+  "scripts": {
+    "dev": "vite",
+    "dev:mock": "npm --prefix ../judge run serve:mock & vite",
+    "build": "tsc && vite build",
+    "typecheck": "tsc",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "pixi.js": "^8.21.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.1",
+    "vitest": "^5.0.3"
+  },
+  "private": true,
+  "type": "module"
+}

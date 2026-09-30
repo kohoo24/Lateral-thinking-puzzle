@@ -1,4 +1,6 @@
-// Claude API로 판정하는 부분. 게임 서버와 테스트 러너가 함께 쓴다.
+// 판정 백엔드. 게임 서버와 테스트 러너는 JudgeBackend 인터페이스만 사용하므로,
+// 판정 AI(Jev 등)를 바꿀 때는 이 인터페이스를 구현한 클래스 하나만 추가하면 된다.
+// ClaudeJudge는 Claude API로 구현한 백엔드다.
 import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import type { z } from "zod";
@@ -34,7 +36,15 @@ export class JudgeUnavailable extends Error {}
 export const DEFAULT_MODEL = "claude-opus-5-5";
 export const DEFAULT_EFFORT: Effort = "low";
 
-export class Judge {
+export interface JudgeBackend {
+  readonly model: string;
+  readonly effort: string;
+  question(text: string): Promise<JudgeCall<QuestionJudgment>>;
+  oath(text: string, playerName: string): Promise<JudgeCall<OathJudgment>>;
+  submission(text: string): Promise<JudgeCall<SubmissionJudgment>>;
+}
+
+export class ClaudeJudge implements JudgeBackend {
   readonly model: string;
   readonly effort: Effort;
   private client: Anthropic;
@@ -45,15 +55,15 @@ export class Judge {
     this.client = new Anthropic({ timeout: opts.timeoutMs ?? 30_000, maxRetries: opts.maxRetries ?? 2 });
   }
 
-  question(text: string) {
+  question(text: string): Promise<JudgeCall<QuestionJudgment>> {
     return this.call(QUESTION_SYSTEM, QuestionJudgment, `<question>${text}</question>`);
   }
 
-  oath(text: string, playerName: string) {
+  oath(text: string, playerName: string): Promise<JudgeCall<OathJudgment>> {
     return this.call(OATH_SYSTEM, OathJudgment, `<player_name>${playerName}</player_name>\n<oath>${text}</oath>`);
   }
 
-  submission(text: string) {
+  submission(text: string): Promise<JudgeCall<SubmissionJudgment>> {
     return this.call(SUBMISSION_SYSTEM, SubmissionJudgment, `<report>${text}</report>`);
   }
 

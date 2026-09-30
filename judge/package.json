@@ -7,7 +7,8 @@
     "typecheck": "tsc",
     "test": "tsx --test test/*.test.ts",
     "judge:test": "tsx src/run-tests.ts",
-    "serve": "tsx src/server.ts"
+    "serve": "tsx src/server.ts",
+    "serve:mock": "JUDGE_BACKEND=mock tsx src/server.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",

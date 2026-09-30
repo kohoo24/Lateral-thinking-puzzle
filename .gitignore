@@ -1,2 +1,3 @@
 node_modules/
 judge/reports/*.json
+app/dist/

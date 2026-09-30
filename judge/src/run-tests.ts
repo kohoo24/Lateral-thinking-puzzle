@@ -6,8 +6,9 @@ import fs from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
 import { judgeTests, contentDir, type QuestionTest } from "./content.js";
-import { costUsd, Judge, JudgeUnavailable, type Effort, type Usage } from "./judge.js";
+import { ClaudeJudge, costUsd, JudgeUnavailable, type Effort, type Usage } from "./judge.js";
 import { countCores, decideLight, type ShipLight } from "./light.js";
+import { judgmentFromExpected } from "./mock-judge.js";
 import type { OathJudgment, QuestionJudgment, SubmissionJudgment } from "./schema.js";
 
 const { values: args } = parseArgs({
@@ -42,23 +43,7 @@ type QuestionRow = {
   call: CallInfo;
 };
 
-// ---------- 목(mock) 판정: 기대 결과를 그대로 돌려줘 채점 로직을 검증한다 ----------
-function mockQuestion(t: QuestionTest): QuestionJudgment {
-  const self = t.expectedSelfRelated ?? false;
-  const base = {
-    subject: self ? ("ship" as const) : ("past_event" as const),
-    self_related: self,
-    rule4_violation: t.expectedRule4,
-    confidence: "high" as const,
-    fact_ids: [] as number[],
-  };
-  if (t.expectedLight === "send_again") return { ...base, question_type: "open", proposition_truth: "not_in_facts" };
-  if (t.expectedLight === "irrelevant") return { ...base, question_type: "yes_no", proposition_truth: "not_in_facts" };
-  const truth = (t.expectedLight === "yes") !== self;
-  return { ...base, question_type: "yes_no", proposition_truth: truth ? "true" : "false" };
-}
-
-const judge = args.mock ? null : new Judge({ model: args.model, effort: args.effort as Effort | undefined });
+const judge = args.mock ? null : new ClaudeJudge({ model: args.model, effort: args.effort as Effort | undefined });
 const modelLabel = judge ? `${judge.model} / effort ${judge.effort}` : "mock";
 
 async function timed<T>(fn: () => Promise<{ result: T; latencyMs: number; usage: Usage; model: string }>) {
@@ -97,7 +82,7 @@ const questionRows: QuestionRow[] = await pool(qJobs, concurrency, async ({ q, l
   const text = q[lang];
   const r = judge
     ? await timed(() => judge.question(text))
-    : { result: mockQuestion(q), call: null as CallInfo, error: null };
+    : { result: judgmentFromExpected(q), call: null as CallInfo, error: null };
   const light: ShipLight = r.result ? decideLight(r.result) : "no_reach";
   return { id: q.id, section: q.section, group: q.group, lang, text, expected: q, light, judgment: r.result, error: r.error, call: r.call };
 });
