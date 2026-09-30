@@ -1,0 +1,352 @@
+[
+  {
+    "id": 1,
+    "core": null,
+    "selfRelated": false,
+    "en": "A passenger ship sank near the island on the night of November 14, 1951.",
+    "ko": "1951년 11월 14일 밤 섬 근처에서 여객선이 침몰했다"
+  },
+  {
+    "id": 2,
+    "core": null,
+    "selfRelated": false,
+    "en": "The ship that sank was the Margaret Rayne.",
+    "ko": "침몰한 배의 이름은 마거릿 레인호였다"
+  },
+  {
+    "id": 3,
+    "core": null,
+    "selfRelated": false,
+    "en": "The ship struck Blackteeth Reef.",
+    "ko": "배는 검은이빨 암초에 부딪혔다"
+  },
+  {
+    "id": 4,
+    "core": null,
+    "selfRelated": false,
+    "en": "All 32 people aboard died.",
+    "ko": "탑승자 32명 전원이 숨졌다"
+  },
+  {
+    "id": 5,
+    "core": null,
+    "selfRelated": false,
+    "en": "The lighthouse lamp was dark that night.",
+    "ko": "그날 밤 등대의 불은 꺼져 있었다"
+  },
+  {
+    "id": 6,
+    "core": null,
+    "selfRelated": false,
+    "en": "The lamp was put out on purpose, not by a malfunction.",
+    "ko": "등불은 고장이 아니라 일부러 꺼졌다"
+  },
+  {
+    "id": 7,
+    "core": null,
+    "selfRelated": false,
+    "en": "The keeper Elias Crane put out the lamp.",
+    "ko": "불을 끈 사람은 등대지기 일라이어스 크레인이다"
+  },
+  {
+    "id": 8,
+    "core": null,
+    "selfRelated": false,
+    "en": "Crane was paid by smugglers to put out the lamp.",
+    "ko": "크레인은 밀수꾼에게 돈을 받고 불을 껐다"
+  },
+  {
+    "id": 9,
+    "core": null,
+    "selfRelated": false,
+    "en": "The smugglers landed their cargo in the north cove of the island.",
+    "ko": "밀수꾼들은 섬 북쪽 만에 화물을 내렸다"
+  },
+  {
+    "id": 10,
+    "core": null,
+    "selfRelated": false,
+    "en": "The official report blamed a lamp malfunction.",
+    "ko": "공식 발표는 등불 고장이었다"
+  },
+  {
+    "id": 11,
+    "core": 1,
+    "selfRelated": true,
+    "en": "The ship at sea tonight is the Margaret Rayne.",
+    "ko": "지금 바다 위의 배는 마거릿 레인호다"
+  },
+  {
+    "id": 12,
+    "core": null,
+    "selfRelated": true,
+    "en": "No living person is aboard the ship.",
+    "ko": "배에는 살아 있는 사람이 타고 있지 않다"
+  },
+  {
+    "id": 13,
+    "core": null,
+    "selfRelated": true,
+    "en": "The ship returns every year on the night of November 14.",
+    "ko": "배는 매년 11월 14일 밤에 돌아온다"
+  },
+  {
+    "id": 14,
+    "core": 1,
+    "selfRelated": true,
+    "en": "The keepers who were taken are aboard the ship.",
+    "ko": "배에는 끌려간 등대지기들이 타고 있다"
+  },
+  {
+    "id": 15,
+    "core": null,
+    "selfRelated": true,
+    "en": "The ship wants the lamp to go out.",
+    "ko": "배는 등불이 꺼지기를 원한다"
+  },
+  {
+    "id": 16,
+    "core": null,
+    "selfRelated": true,
+    "en": "The ship takes those who answer it.",
+    "ko": "배는 대답하는 사람을 데려간다"
+  },
+  {
+    "id": 17,
+    "core": null,
+    "selfRelated": true,
+    "en": "The ship's name changes to the name of the last person it took.",
+    "ko": "배의 이름은 마지막으로 끌려간 사람의 이름으로 바뀐다"
+  },
+  {
+    "id": 18,
+    "core": null,
+    "selfRelated": true,
+    "en": "The ship's name is now Thomas Hale.",
+    "ko": "지금 배의 이름은 토머스 헤일이다"
+  },
+  {
+    "id": 19,
+    "core": null,
+    "selfRelated": true,
+    "en": "Three flashes are a call to come aboard.",
+    "ko": "세 번 깜빡임은 배로 오라는 부름이다"
+  },
+  {
+    "id": 20,
+    "core": null,
+    "selfRelated": false,
+    "en": "Crane disappeared on the night of November 14, 1952.",
+    "ko": "크레인은 1952년 11월 14일 밤에 실종되었다"
+  },
+  {
+    "id": 21,
+    "core": null,
+    "selfRelated": false,
+    "en": "Crane signaled the ship all night before he disappeared.",
+    "ko": "크레인은 배에게 밤새 신호를 보낸 뒤 사라졌다"
+  },
+  {
+    "id": 22,
+    "core": null,
+    "selfRelated": false,
+    "en": "Crane left a confession letter before he disappeared.",
+    "ko": "크레인은 사라지기 전 고백 편지를 남겼다"
+  },
+  {
+    "id": 23,
+    "core": null,
+    "selfRelated": false,
+    "en": "Martin Owen wrote rules 1, 3, 4, and 5.",
+    "ko": "마틴 오웬이 수칙 1, 3, 4, 5를 썼다"
+  },
+  {
+    "id": 24,
+    "core": null,
+    "selfRelated": false,
+    "en": "Owen survived by never answering the signals.",
+    "ko": "오웬은 신호에 대답하지 않고 버텨 살아남았다"
+  },
+  {
+    "id": 25,
+    "core": null,
+    "selfRelated": false,
+    "en": "Will Tanner disappeared on the night of November 14, 1975.",
+    "ko": "윌 태너는 1975년 11월 14일 밤에 실종되었다"
+  },
+  {
+    "id": 26,
+    "core": null,
+    "selfRelated": false,
+    "en": "Helen Brooks wrote rule 6.",
+    "ko": "헬렌 브룩스가 수칙 6을 썼다"
+  },
+  {
+    "id": 27,
+    "core": null,
+    "selfRelated": false,
+    "en": "In 1976, Tanner's voice was heard outside the door.",
+    "ko": "1976년 밤 문밖에서 태너의 목소리가 들렸다"
+  },
+  {
+    "id": 28,
+    "core": null,
+    "selfRelated": false,
+    "en": "Brooks survived by not opening the door.",
+    "ko": "브룩스는 문을 열지 않고 살아남았다"
+  },
+  {
+    "id": 29,
+    "core": null,
+    "selfRelated": false,
+    "en": "Thomas Hale disappeared on the night of November 14, 1983.",
+    "ko": "토머스 헤일은 1983년 11월 14일 밤에 실종되었다"
+  },
+  {
+    "id": 30,
+    "core": null,
+    "selfRelated": false,
+    "en": "Hale was a former journalist investigating the wreck.",
+    "ko": "헤일은 사고를 취재하던 전직 기자였다"
+  },
+  {
+    "id": 31,
+    "core": null,
+    "selfRelated": false,
+    "en": "Hale signaled the ship all night despite knowing the rules.",
+    "ko": "헤일은 수칙을 알면서도 배와 밤새 교신했다"
+  },
+  {
+    "id": 32,
+    "core": null,
+    "selfRelated": false,
+    "en": "Hale asked for the ship's name.",
+    "ko": "헤일은 배의 이름을 물었다"
+  },
+  {
+    "id": 33,
+    "core": null,
+    "selfRelated": false,
+    "en": "Hale was taken.",
+    "ko": "헤일은 끌려갔다"
+  },
+  {
+    "id": 34,
+    "core": 2,
+    "selfRelated": false,
+    "en": "Rule 2 is fake.",
+    "ko": "수칙 2는 가짜다"
+  },
+  {
+    "id": 35,
+    "core": 2,
+    "selfRelated": false,
+    "en": "Rule 2 was written after Hale's last entry.",
+    "ko": "수칙 2는 헤일의 마지막 기록 이후에 쓰였다"
+  },
+  {
+    "id": 36,
+    "core": null,
+    "selfRelated": false,
+    "en": "Rules 1, 3, 4, 5, and 6 are genuine.",
+    "ko": "수칙 1, 3, 4, 5, 6은 진짜다"
+  },
+  {
+    "id": 37,
+    "core": null,
+    "selfRelated": false,
+    "en": "Crane's confession letter is in the storeroom under the stairs.",
+    "ko": "계단 아래 창고에는 크레인의 고백 편지가 있다"
+  },
+  {
+    "id": 38,
+    "core": null,
+    "selfRelated": false,
+    "en": "The storeroom holds the oaths of past keepers.",
+    "ko": "창고에는 역대 등대지기의 서약서가 있다"
+  },
+  {
+    "id": 39,
+    "core": 3,
+    "selfRelated": false,
+    "en": "Stopping all contact with the ship, answering and asking alike, keeps you from being taken.",
+    "ko": "배와의 교신을 멈추면(대답도 질문도) 끌려가지 않는다"
+  },
+  {
+    "id": 40,
+    "core": 3,
+    "selfRelated": false,
+    "en": "Survival requires both keeping the lamp lit until dawn and stopping all contact with the ship.",
+    "ko": "살아남으려면 등불을 새벽까지 지키는 것과 교신을 멈추는 것이 둘 다 필요하다"
+  },
+  {
+    "id": 41,
+    "core": null,
+    "selfRelated": false,
+    "en": "Signing the oath in your own name recovers some of the lost words.",
+    "ko": "서약서에 자기 이름을 쓰면 잃은 말을 일부 되찾는다"
+  },
+  {
+    "id": 42,
+    "core": null,
+    "selfRelated": false,
+    "en": "The storm arrives at dawn.",
+    "ko": "폭풍은 새벽에 도착한다"
+  },
+  {
+    "id": 43,
+    "core": 1,
+    "selfRelated": false,
+    "en": "Crane, Tanner, and Hale are now on that ship (when asked with the person as subject).",
+    "ko": "크레인, 태너, 헤일은 지금 그 배에 있다(인물을 주어로 물을 때)"
+  },
+  {
+    "id": 44,
+    "core": 2,
+    "selfRelated": false,
+    "en": "The rule 2 now written in the log was written by Hale; Owen's original rule 2 was scraped away.",
+    "ko": "지금 일지에 적힌 수칙 2는 헤일이 썼다(오웬의 원래 2번은 긁혀 지워졌다)"
+  },
+  {
+    "id": 45,
+    "core": null,
+    "selfRelated": false,
+    "en": "Hale scraped away Owen's original rule 2 and wrote the new rule 2 in its place.",
+    "ko": "헤일은 오웬이 쓴 원래 2번 수칙을 긁어내고 그 자리에 수칙 2를 써넣었다"
+  },
+  {
+    "id": 46,
+    "core": null,
+    "selfRelated": false,
+    "en": "Rule 5 applies only at night; the storeroom may be opened by day.",
+    "ko": "수칙 5는 밤에만 적용된다(낮에는 창고를 열어도 된다)"
+  },
+  {
+    "id": 47,
+    "core": null,
+    "selfRelated": true,
+    "en": "The ship calls more often when the storeroom door is opened at night.",
+    "ko": "배는 밤에 창고 문이 열리면 더 자주 부른다"
+  },
+  {
+    "id": 48,
+    "core": null,
+    "selfRelated": false,
+    "en": "Owen read Crane's confession letter in the storeroom in 1953.",
+    "ko": "오웬은 1953년 창고에서 크레인의 고백 편지를 읽었다"
+  },
+  {
+    "id": 49,
+    "core": null,
+    "selfRelated": false,
+    "en": "Hale read Crane's confession letter on the day he arrived.",
+    "ko": "헤일은 부임한 날 크레인의 고백 편지를 읽었다"
+  },
+  {
+    "id": 50,
+    "core": null,
+    "selfRelated": false,
+    "en": "The morning after Hale disappeared, the lamp was still lit.",
+    "ko": "헤일이 사라진 밤이 지난 아침, 등불은 켜져 있었다"
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "name": "answer-in-light-judge",
+  "version": "1.0.0",
+  "description": "Answer in Light 판정 서버와 판정 테스트 러너",
+  "scripts": {
+    "extract": "tsx scripts/extract-content.ts",
+    "typecheck": "tsc",
+    "test": "tsx --test test/*.test.ts",
+    "judge:test": "tsx src/run-tests.ts",
+    "serve": "tsx src/server.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.131.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "private": true,
+  "type": "module"
+}
