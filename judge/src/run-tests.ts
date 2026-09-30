@@ -6,7 +6,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
 import { judgeTests, contentDir, type QuestionTest } from "./content.js";
-import { ClaudeJudge, costUsd, JudgeUnavailable, type Effort, type Usage } from "./judge.js";
+import { createJudge } from "./backends.js";
+import { costUsd, JudgeUnavailable, type Effort, type Usage } from "./judge.js";
 import { countCores, decideLight, type ShipLight } from "./light.js";
 import { judgmentFromExpected } from "./mock-judge.js";
 import type { OathJudgment, QuestionJudgment, SubmissionJudgment } from "./schema.js";
@@ -16,6 +17,7 @@ const { values: args } = parseArgs({
     lang: { type: "string", default: "both" },
     only: { type: "string" },
     concurrency: { type: "string", default: "4" },
+    backend: { type: "string", default: "jev" },
     model: { type: "string" },
     effort: { type: "string" },
     mock: { type: "boolean", default: false },
@@ -43,8 +45,17 @@ type QuestionRow = {
   call: CallInfo;
 };
 
-const judge = args.mock ? null : new ClaudeJudge({ model: args.model, effort: args.effort as Effort | undefined });
-const modelLabel = judge ? `${judge.model} / effort ${judge.effort}` : "mock";
+let judge: ReturnType<typeof createJudge> | null = null;
+if (!args.mock) {
+  try {
+    judge = createJudge(args.backend, { model: args.model, effort: args.effort as Effort | undefined });
+  } catch (e) {
+    console.error(`판정 백엔드(${args.backend})를 만들 수 없습니다: ${e instanceof Error ? e.message : e}`);
+    console.error("Jev는 TYPESAFE_API_KEY, Claude는 ANTHROPIC_API_KEY 환경 변수가 필요합니다. API 없이 채점 로직만 보려면 --mock");
+    process.exit(1);
+  }
+}
+const modelLabel = judge ? `${args.backend}: ${judge.model}${judge.effort !== "-" ? ` / effort ${judge.effort}` : ""}` : "mock(기대 결과)";
 
 async function timed<T>(fn: () => Promise<{ result: T; latencyMs: number; usage: Usage; model: string }>) {
   try {
@@ -158,6 +169,8 @@ const avgO = avgCost(oathRows.map((r) => r.call).filter((c): c is NonNullable<Ca
 const avgS = avgCost(subRows.map((r) => r.call).filter((c): c is NonNullable<CallInfo> => c != null));
 const perPlayer =
   avgQ == null ? null : avgQ * CALLS_PER_PLAYER.question + (avgO ?? 0) * CALLS_PER_PLAYER.oath + (avgS ?? 0) * CALLS_PER_PLAYER.submission;
+const avgTokens = (cs: NonNullable<CallInfo>[]) => (cs.length ? cs.reduce((a, c) => a + c.usage.input + c.usage.cacheRead + c.usage.cacheWrite + c.usage.output, 0) / cs.length : null);
+const tokensPerPlayer = avgTokens(qCalls) == null ? null : avgTokens(qCalls)! * CALLS_PER_PLAYER.question;
 const cacheReadShare = pct(
   calls.reduce((a, c) => a + c.usage.cacheRead, 0),
   calls.reduce((a, c) => a + c.usage.cacheRead + c.usage.cacheWrite + c.usage.input, 0),
@@ -232,6 +245,7 @@ ${sectionRows.join("\n")}
 | 질문 판정 지연 p50 / p95 / 최대 | ${fmt(q(0.5), 2)}초 / ${fmt(q(0.95), 2)}초 / ${fmt(lat.length ? lat[lat.length - 1] / 1000 : null, 2)}초 |
 | 6초 초과 비율(게임에서 "신호가 닿지 않음") | ${fmt(overTimeout)}% |
 | 캐시 읽기 비중(입력 토큰 중) | ${fmt(cacheReadShare)}% |
+| 플레이어 1명 예상 토큰(질문 ${CALLS_PER_PLAYER.question}회) | ${tokensPerPlayer == null ? "-" : Math.round(tokensPerPlayer).toLocaleString()} |
 | 질문 판정 1회 평균 비용 | ${avgQ == null ? "-" : `$${avgQ.toFixed(5)}`} |
 | 플레이어 1명 예상 비용(질문 ${CALLS_PER_PLAYER.question} + 서약 1 + 제출 1) | ${perPlayer == null ? "-" : `$${perPlayer.toFixed(3)}`} |
 
@@ -247,7 +261,7 @@ ${errors.length ? `### 판정 오류\n\n${errors.map((e) => `- ${e.id}: ${e.erro
 `;
 
 fs.mkdirSync(args.out!, { recursive: true });
-const base = path.join(args.out!, `${stamp}-${args.mock ? "mock" : `${judge!.model}-${judge!.effort}`}`);
+const base = path.join(args.out!, `${stamp}-${args.mock ? "mock" : `${args.backend}-${judge!.model}${judge!.effort !== "-" ? `-${judge!.effort}` : ""}`}`);
 fs.writeFileSync(`${base}.md`, report);
 fs.writeFileSync(`${base}.json`, JSON.stringify({ questionRows, oathRows, subRows }, null, 2));
 console.log(report);

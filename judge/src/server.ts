@@ -3,18 +3,17 @@
 //   POST /v1/oath       { sessionId, text, playerName } → { valid }
 //   POST /v1/submission { sessionId, text }             → { cores, count }
 // 스팀 인증은 M4에서 붙인다. 지금은 sessionId 단위로 호출 수만 제한한다.
-// JUDGE_BACKEND=mock 이면 API 없이 개발용 가짜 판정을 쓴다.
+// 판정 백엔드는 JUDGE_BACKEND(jev 기본, claude, mock)로 고른다.
 import http from "node:http";
-import { ClaudeJudge, JudgeUnavailable, type JudgeBackend } from "./judge.js";
-import { MockJudge } from "./mock-judge.js";
+import { createJudge } from "./backends.js";
+import { JudgeUnavailable, type JudgeBackend } from "./judge.js";
 import { contaminationFor, countCores, decideLight } from "./light.js";
 
 const PORT = Number(process.env.PORT ?? 8787);
 const CALL_LIMIT_PER_SESSION = 60; // 신호 24회 + 실패 재시도·서약·제출 여유
 const GAME_TIMEOUT_MS = 5500; // 게임은 6초에 끊으므로 서버가 먼저 포기한다
 
-const judge: JudgeBackend =
-  process.env.JUDGE_BACKEND === "mock" ? new MockJudge() : new ClaudeJudge({ timeoutMs: GAME_TIMEOUT_MS, maxRetries: 0 });
+const judge: JudgeBackend = createJudge(undefined, { timeoutMs: GAME_TIMEOUT_MS, maxRetries: 0 });
 const callsBySession = new Map<string, number>();
 
 function readJson(req: http.IncomingMessage): Promise<Record<string, unknown>> {
@@ -82,4 +81,4 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, () => console.log(`judge server on :${PORT} (${judge.model}, effort ${judge.effort})`));
+server.listen(PORT, () => console.log(`judge server on :${PORT} (${judge.model})`));
