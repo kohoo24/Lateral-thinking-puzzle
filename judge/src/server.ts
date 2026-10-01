@@ -25,6 +25,29 @@ const STATIC_DIR = process.env.STATIC_DIR ? path.resolve(process.env.STATIC_DIR)
 const LOG_DIR = path.resolve(process.env.JUDGE_LOG_DIR ?? path.join(here, "../logs"));
 const LOG_ACCESS_TOKEN = process.env.LOG_ACCESS_TOKEN ?? "";
 const TRUSTED_PROXY_HOPS = Number(process.env.TRUSTED_PROXY_HOPS ?? 1);
+// 배포 서비스가 실제 접속 주소를 따로 넣어 주는 헤더(예: Cloudflare를 거치는 Render의 cf-connecting-ip).
+// 정하면 x-forwarded-for보다 먼저 쓴다. 플레이어가 위조할 수 없는(앞단이 덮어쓰는) 헤더만 적는다.
+const CLIENT_IP_HEADER = (process.env.CLIENT_IP_HEADER ?? "").toLowerCase();
+const IP_HEADERS = ["cf-connecting-ip", "true-client-ip", "x-real-ip"];
+
+function playerIp(req: http.IncomingMessage): string {
+  const fromHeader = CLIENT_IP_HEADER ? req.headers[CLIENT_IP_HEADER] : undefined;
+  const value = (Array.isArray(fromHeader) ? fromHeader[0] : fromHeader)?.trim();
+  return value || clientIp(req.headers["x-forwarded-for"], req.socket.remoteAddress, TRUSTED_PROXY_HOPS);
+}
+
+// /healthz에 붙이는 주소 판별 진단. 주소 값은 내보내지 않고 헤더의 생김새만 알려준다
+function clientDiagnosis(req: http.IncomingMessage) {
+  const xff = req.headers["x-forwarded-for"];
+  const entries = (Array.isArray(xff) ? xff.join(",") : (xff ?? "")).split(",").filter((s) => s.trim()).length;
+  const chosen = playerIp(req);
+  return {
+    forwardedEntries: entries,
+    ipHeaders: IP_HEADERS.filter((h) => req.headers[h]),
+    source: CLIENT_IP_HEADER && req.headers[CLIENT_IP_HEADER] ? `header:${CLIENT_IP_HEADER}` : entries >= TRUSTED_PROXY_HOPS && TRUSTED_PROXY_HOPS > 0 ? `forwarded:${TRUSTED_PROXY_HOPS}` : "socket",
+    matches: Object.fromEntries(IP_HEADERS.filter((h) => req.headers[h]).map((h) => [h, String(req.headers[h]).trim() === chosen])),
+  };
+}
 
 const judge: JudgeBackend = createJudge(undefined, { timeoutMs: GAME_TIMEOUT_MS, maxRetries: 0 });
 const guard = new Guard(limitsFromEnv());
@@ -60,7 +83,7 @@ function authorized(req: http.IncomingMessage): boolean {
 
 function handleGet(req: http.IncomingMessage, res: http.ServerResponse) {
   const url = new URL(req.url ?? "/", "http://x");
-  if (url.pathname === "/healthz") return send(res, 200, { ok: true, model: judge.model, usage: guard.usage() });
+  if (url.pathname === "/healthz") return send(res, 200, { ok: true, model: judge.model, usage: guard.usage(), client: clientDiagnosis(req) });
   if (url.pathname === "/v1/logs" || url.pathname.startsWith("/v1/logs/")) {
     if (!authorized(req)) return send(res, 404, { error: "not found" });
     if (url.pathname === "/v1/logs") return send(res, 200, { files: playLog.files() });
@@ -87,7 +110,7 @@ const server = http.createServer(async (req, res) => {
   if (!sessionId || !text) return send(res, 400, { error: "sessionId and text are required" });
   if (!["/v1/question", "/v1/oath", "/v1/submission"].includes(req.url ?? "")) return send(res, 404, { error: "not found" });
 
-  const refusal = guard.take(sessionId, clientIp(req.headers["x-forwarded-for"], req.socket.remoteAddress, TRUSTED_PROXY_HOPS));
+  const refusal = guard.take(sessionId, playerIp(req));
   if (refusal) return send(res, REFUSAL_STATUS[refusal], { light: "no_reach", error: refusal });
 
   const started = performance.now();
