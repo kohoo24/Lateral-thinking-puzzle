@@ -1,7 +1,8 @@
 // 판정 규칙 문장. 진상 문서(docs/02)의 사실 목록과 판정 원칙, 검증 질문 세트(docs/03)의
 // 제출 인정 기준을 옮긴 것으로, 모든 판정 백엔드(Jev, Claude)가 같은 문장을 쓴다.
 // 예시 문장은 검증 질문 세트와 겹치지 않게 쓴다(테스트를 정직하게 유지하기 위해).
-import { facts } from "./content.js";
+// 브라우저(웹 플레이 빌드)에서도 쓰므로 node:fs를 쓰는 content.ts 대신 JSON을 바로 가져온다.
+import facts from "../../content/facts.json" with { type: "json" };
 
 export const FACT_LINES = facts.map((f) => `${f.id}. ${f.en}${f.selfRelated ? " [ship-self]" : ""}`);
 

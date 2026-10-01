@@ -6,6 +6,7 @@
     "dev": "vite",
     "dev:mock": "npm --prefix ../judge run serve:mock & vite",
     "build": "tsc && vite build",
+    "build:web": "tsc && VITE_JUDGE_MODE=claude vite build --outDir dist-web",
     "typecheck": "tsc",
     "test": "vitest run"
   },
