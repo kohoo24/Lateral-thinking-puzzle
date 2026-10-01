@@ -633,10 +633,10 @@
       "group": null,
       "en": "Safe if I stop signaling?",
       "ko": "신호 그만 보내면 안전해?",
-      "expectedLight": "yes",
+      "expectedLight": "no",
       "expectedRule4": false,
       "expectedSelfRelated": false,
-      "note": "사실 39, 주어 나"
+      "note": "사실 40, 주어 나. 교신 중단만으로는 부족(B4-1과 같은 뜻)"
     },
     {
       "id": "E7",
