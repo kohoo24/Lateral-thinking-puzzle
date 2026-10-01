@@ -70,8 +70,16 @@ async function playBad(s: EndingSummary, t: Strings) {
   const L = s.lang;
   const view = screen("ending-bad");
   const deck = await artUrl(DECK_ART);
-  if (deck) view.style.backgroundImage = `linear-gradient(rgba(2,3,4,.35), rgba(2,3,4,.75)), url("${deck}")`;
-  else view.append(el("div", "deck-light"));
+  // 그림이 있으면 먼 등대의 등불 자리에 빛을 겹쳐, 모스 신호가 그 등대에서 오는 것처럼 깜빡인다
+  let beacon = el("div", "deck-light");
+  if (deck) {
+    const art = el("div", "deck-art");
+    art.style.backgroundImage = `url("${deck}")`;
+    beacon = el("div", "deck-beacon");
+    art.append(beacon);
+    view.append(art);
+    view.classList.add("with-art");
+  } else view.append(beacon);
   const caption = el("p", "deck-date", ENDING_TEXT.bad[L][0]);
   const incoming = el("p", "deck-incoming");
   const buttons = el("div", "deck-buttons");
@@ -82,10 +90,13 @@ async function playBad(s: EndingSummary, t: Strings) {
     // 등대에서 모스 신호가 오고, 해독된 문장이 한 글자씩 나타난다
     const pulses = toPulses(q, 2500, 3500);
     const per = pulses.reduce((a, p) => a + p.ms, 0) / Math.max(1, q.length);
+    let i = 0;
     for (const ch of q) {
       incoming.textContent += ch;
+      beacon.classList.toggle("on", i++ % 2 === 0 && ch.trim() !== "");
       await sleep(per);
     }
+    beacon.classList.remove("on");
     // 무엇을 누르든 배의 불빛이 그대로 나간다. 대답은 기록하지도 판정하지도 않는다.
     await new Promise<void>((resolve) => {
       buttons.replaceChildren(

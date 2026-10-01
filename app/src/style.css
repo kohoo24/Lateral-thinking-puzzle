@@ -220,3 +220,14 @@ body.footsteps .log { box-shadow: inset 0 -30px 40px -30px rgba(70, 110, 160, .3
 .ending-bad { background-size: cover; background-position: center; }
 /* 등실 밖에서는 이동 버튼을 왼쪽 위로(그림 아래쪽 소품을 가리지 않게) */
 body:not([data-room="lamp"]) .roomnav { bottom: auto; top: 24px; }
+/* 배드 엔딩 갑판 그림: 등대 등불 자리(그림 기준 63.8%, 37.6%)에 빛을 겹친다 */
+.ending-bad.with-art { justify-content: flex-start; padding-top: 9vh; overflow: hidden; }
+.ending-bad.with-art > *:not(.deck-art) { position: relative; z-index: 1; text-shadow: 0 1px 8px #000; }
+.deck-art { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); aspect-ratio: 3 / 2; width: max(100vw, 150vh); background-size: cover; background-position: center; z-index: 0; }
+.deck-art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(2,3,4,.45), rgba(2,3,4,.1) 40%, rgba(2,3,4,.55)); }
+.deck-beacon { position: absolute; left: 63.8%; top: 37.6%; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: #ffcf8a; opacity: .35; box-shadow: 0 0 18px 6px rgba(255, 180, 90, .35); transition: opacity .08s; z-index: 1; }
+.deck-beacon.on { opacity: 1; box-shadow: 0 0 40px 16px rgba(255, 190, 110, .7); }
+.ending-bad.with-art .deck-buttons { margin-top: auto; margin-bottom: 10vh; }
+.ending-bad.with-art .deck-register { position: absolute; left: 50%; bottom: 14vh; transform: translateX(-50%); }
+.ending-bad.with-art .final { position: absolute; left: 0; right: 0; bottom: 6vh; }
+.ending-bad.with-art .deck-register, .ending-bad.with-art .deck-register * { text-shadow: none; }
