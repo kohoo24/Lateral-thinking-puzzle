@@ -195,6 +195,7 @@ export class LampRoomScene {
     try {
       const tex = await Assets.load<Texture>(url);
       this.foreground = new Sprite(tex);
+      document.body.classList.add("has-foreground");
       this.app.stage.children[0].addChildAt(this.foreground, (this.app.stage.children[0] as Container).getChildIndex(this.lampGlow));
       this.layout();
     } catch {
@@ -225,9 +226,17 @@ export class LampRoomScene {
     this.grain.width = w;
     this.grain.height = h;
     if (this.foreground) {
-      const sc = w / this.foreground.texture.width;
+      // 그림 속 난간 윗면(그림 높이의 83%)을 창 아래 난간 높이(화면의 82%)에 맞추고, 화면 아래를 덮도록 키운다
+      const tw = this.foreground.texture.width;
+      const th = this.foreground.texture.height;
+      let sc = w / tw;
+      let oy = h * 0.82 - th * 0.83 * sc;
+      if (oy + th * sc < h) {
+        sc = (h * 0.18) / (th * 0.17);
+        oy = h * 0.82 - th * 0.83 * sc;
+      }
       this.foreground.scale.set(sc);
-      this.foreground.position.set(0, h - this.foreground.texture.height * sc);
+      this.foreground.position.set(0, oy);
     }
     this.glassDrops = Array.from({ length: 70 }, () => ({ x: Math.random() * w, y: Math.random() * h * 0.82, r: 1 + Math.random() * 2.2, slide: Math.random() < 0.15 ? 0.01 + Math.random() * 0.03 : 0 }));
     this.dawnOverlay.width = w;

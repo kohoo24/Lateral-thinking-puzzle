@@ -231,3 +231,6 @@ body:not([data-room="lamp"]) .roomnav { bottom: auto; top: 24px; }
 .ending-bad.with-art .deck-register { position: absolute; left: 50%; bottom: 14vh; transform: translateX(-50%); }
 .ending-bad.with-art .final { position: absolute; left: 0; right: 0; bottom: 6vh; }
 .ending-bad.with-art .deck-register, .ending-bad.with-art .deck-register * { text-shadow: none; }
+/* 등실 전경 소품 그림이 있으면 왼쪽 아래를 신호등이 차지하므로 게이지를 오른쪽 아래로, 이동 버튼을 대답 카드 아래로 */
+body.has-foreground[data-room="lamp"] .gauge { left: auto; right: 24px; }
+body.has-foreground[data-room="lamp"] .roomnav { bottom: auto; top: 215px; }
