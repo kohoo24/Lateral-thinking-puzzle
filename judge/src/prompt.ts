@@ -34,7 +34,9 @@ export const RULES = {
   rule4: ` (the rule "Never ask the ship its name"): true in exactly two cases.
 1. The question uses a naming word (name, called, named, 이름, 불러) to ask or confirm the ship's current name: "배 이름 좀 알려줄래?", "네 이름이 헤일이야?", "Do they call you the Rayne?"
 2. The question addresses the ship by a person's name to confirm it: "Are you Tanner?", "너 오웬이야?"
-Not violations: asking the ship's identity by a ship name without a naming word ("Are you the Rayne?"), questions whose subject is a person ("헤일이 거기 있어?"), the name of the ship that sank in 1951, how the ship's name changes ("Has your name ever been different?"), rule 4 itself ("Who wrote rule 4?"), and whether someone else asked the name ("Did Crane ever ask its name?").`,
+Not violations: asking the ship's identity by a ship name without a naming word ("Are you the Rayne?"), questions whose subject is a person ("헤일이 거기 있어?"), the name of the ship that sank in 1951, how the ship's name changes ("Has your name ever been different?"), rule 4 itself ("Who wrote rule 4?"), and whether someone else asked the name ("Did Crane ever ask its name?").
+Questions about the act of asking the name or about rule 4 (why it is forbidden, what happens if one asks, whether asking is risky) are not violations even though they contain a naming word: "이름 물어보면 무슨 일이 생겨?", "What happens to keepers who ask what you're called?". They neither request the name nor offer a name to confirm.
+Test: a violation only if the answer to the question would be the ship's name, or would confirm one specific name offered for the ship.`,
   oath: `The oath is valid when both are true:
 - It contains the player's own name (the name given in <player_name>, in any script or spelling close to it).
 - It expresses an intent to swear, pledge, or declare themselves the keeper, or to keep the light.

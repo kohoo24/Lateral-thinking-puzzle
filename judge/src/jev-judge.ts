@@ -14,9 +14,9 @@ export const THRESHOLDS = {
   minTruthConfidence: 0.5,
   selfRelated: 0.5,
   // 수칙 4 오탐은 0건이 목표라 위반은 더 확실할 때만 인정한다.
-  // 2026-10-01 판정 테스트 2회(jev-1.13.0): 오탐 쪽 최고 0.86(H5 이름을 묻으면 안 되는 이유), 실제 위반 최저 0.87(H3 ko).
-  // 간격이 0.01뿐이라 H5류 오탐은 구간이 아니라 수칙 4 규칙 문장(prompt.ts)으로 줄여야 한다.
-  rule4: 0.87,
+  // 2026-10-01 판정 테스트 3회(jev-1.13.0, "이름을 묻는 행위에 대한 질문은 비위반" 규칙 추가 후):
+  // 비위반 최고 0.63(H9 ko), 실제 위반 최저 0.82(H3 ko) → 사이에서 오탐 쪽으로 여유를 둔 0.75
+  rule4: 0.75,
   oathValid: 0.5,
   coreAccepted: 0.5,
 };
@@ -49,8 +49,8 @@ const questionQuestions = {
     },
   ),
   rule4_violation: noul(`Does the question break the rule "Never ask the ship its name"?\n${RULES.rule4}`, {
-    true: "It asks or confirms the ship's current name with a naming word, or addresses the ship by a person's name.",
-    false: "It does not ask or confirm the ship's current name.",
+    true: "Its answer would be the ship's current name, or would confirm one specific name offered for the ship (with a naming word, or by addressing the ship by a person's name).",
+    false: "It does not request or confirm the ship's name. This includes questions about the rule or about the act of asking the name (why it is forbidden, what happens, whether it is risky).",
   }),
 };
 
