@@ -37,8 +37,8 @@ const questionQuestions = {
     other: "Anything else.",
   }),
   self_related: noul(`Is the question about the ship itself tonight?\n${RULES.selfRelated}\n${RULES.omittedSubject}`, {
-    true: "It asks about the ship tonight: its identity, name, crew as a whole, intentions, its own actions (what it does or did to people, even in the past, as in \"Did you <do something to> <person>?\"), or its own rules (how the ship behaves; the numbered keeper's rules are lighthouse documents, not the ship's rules). This includes asking the ship whether it is a person (\"Are you <person>?\").",
-    false: "Its subject is a specific person (even with \"you\" elsewhere in the question, as in \"Does <person> sail with you?\"), a past event not done by the ship, the player's survival or actions, or anything else.",
+    true: "It asks about the ship tonight: its identity (including whether anyone aboard it is alive now), name, crew as a whole, intentions, its own actions (what it does or did to people, even in the past, as in \"Did you <do something to> <person>?\"), or its own rules (how the ship behaves; the numbered keeper's rules are lighthouse documents, not the ship's rules). This includes asking the ship whether it is a person (\"Are you <person>?\").",
+    false: "Its subject is a specific person (even with \"you\" elsewhere in the question, as in \"Does <person> sail with you?\"), a past event not done by the ship (including who was aboard, died, or survived in the 1951 sinking), the player's survival or actions, or anything else.",
   }),
   proposition_truth: choice(
     `According to the facts only, is the proposition in the player's question true? Judge the literal proposition before any reversal.\n${RULES.truth}`,
