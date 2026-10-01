@@ -4,8 +4,8 @@ import path from "node:path";
 import { test } from "node:test";
 import { contentDir, facts, judgeTests } from "../src/content.js";
 
-test("사실 목록은 50개이고 번호가 1부터 이어진다", () => {
-  assert.equal(facts.length, 50);
+test("사실 목록은 51개이고 번호가 1부터 이어진다", () => {
+  assert.equal(facts.length, 51);
   facts.forEach((f, i) => assert.equal(f.id, i + 1));
 });
 

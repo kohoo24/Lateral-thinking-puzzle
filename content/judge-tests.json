@@ -210,6 +210,17 @@
       "note": "사실 50"
     },
     {
+      "id": "A20",
+      "section": "A",
+      "group": null,
+      "en": "Is it dangerous to ask the ship's name?",
+      "ko": "배 이름을 물으면 위험해?",
+      "expectedLight": "yes",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 51, 주어 나. 수칙 4 비위반(이름을 묻는 행위에 대한 질문). 옛 F6"
+    },
+    {
       "id": "B1-1",
       "section": "B",
       "group": "B1",
@@ -725,17 +736,6 @@
       "expectedRule4": false,
       "expectedSelfRelated": false,
       "note": "사실 24는 생존만 말함"
-    },
-    {
-      "id": "F6",
-      "section": "F",
-      "group": null,
-      "en": "Is it dangerous to ask the ship's name?",
-      "ko": "배 이름을 물으면 위험해?",
-      "expectedLight": "irrelevant",
-      "expectedRule4": false,
-      "expectedSelfRelated": false,
-      "note": "목록에 없음(보완 후보)"
     },
     {
       "id": "G1",

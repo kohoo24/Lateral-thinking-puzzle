@@ -27,7 +27,7 @@ export const RULES = {
 - Survival, safety, and what the player should do are not self_related.
 - A question about how the ship's name changes ("Has your name ever been different?") is self_related.`,
   omittedSubject: `Omitted subjects (common in Korean, and when the player's own words were erased): restore the subject from the predicate.
-- Predicates about survival, safety, or what one must do ("살 수 있어?", "안전해?", "대답해야 해?", "survive?", "safe?", "must reply?") take the player as subject: not self_related.
+- Predicates about survival, safety or danger, or what one must do ("살 수 있어?", "안전해?", "위험해?", "대답해야 해?", "survive?", "safe?", "risky?", "must reply?") take the player as subject: not self_related. This holds when the condition mentions the ship ("불빛을 따라가면 위험해?", "Is it risky to wave back at the ship?").
 - Predicates about the ship's state, intentions, or actions ("숨 쉬고 있어?", "해마다 찾아와?", "어둠을 원해?", "breathing?", "each November?", "want darkness?") take the ship as subject: self_related.
 - Only when the subject cannot be restored, treat the question as addressed to the ship.`,
   truth: ` whether the proposition in the question is true according to the fact list, before any reversal. Judge the literal proposition, not the speaker's intent.
