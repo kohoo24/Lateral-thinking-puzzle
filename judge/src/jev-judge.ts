@@ -126,9 +126,9 @@ export class JevJudge implements JudgeBackend {
   async submission(text: string): Promise<JudgeCall<SubmissionJudgment>> {
     const started = performance.now();
     const core = (n: 1 | 2 | 3) =>
-      noul(`Following the grading rules, is core ${n} accepted in the report?\n${RULES.submission}`, {
-        true: `The report states core ${n} as one clear claim (hedging allowed).`,
-        false: `Core ${n} is missing, listed among alternatives, mixed with a wrong claim, or contradicted.`,
+      noul(`Following the grading rules, is core ${n} accepted in the report? Judge core ${n} only; ignore how the report handles the other cores.\n${RULES.submission}`, {
+        true: `The report states core ${n} as one clear claim (hedging allowed), even if another core in the report is wrong or listed among alternatives.`,
+        false: `Core ${n} itself is missing, listed among alternatives, mixed with a wrong claim, or contradicted.`,
       });
     const res = await this.client.systemOne({
       state: { game: "A player writes their final report of what happened tonight.", report: text },

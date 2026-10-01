@@ -61,6 +61,7 @@ Core 2 (the fake rule): rule 2 is fake. Saying Hale wrote it is not required.
 Core 3 (how to survive): the report must say to stop contact with the ship (stop answering, asking, or signaling). Keeping the lamp lit alone does not count. "Stop" alone, without saying what to stop, does not count.
 
 Scoring each core:
+- Judge each core on its own, using only what the report says about that core. A problem in one core's claim (alternatives listed, a wrong claim mixed in, a contradiction) never lowers another core. Example: "Either the reef ship or some fishing boat. Hale forged rule 2. Quit answering and keep the light on." Core 1 is not accepted (alternatives), but cores 2 and 3 are accepted.
 - One clear claim: accepted.
 - One claim with hedging ("maybe rule 2 is fake"): accepted.
 - Several alternatives listed ("rule 1 or rule 2 is fake", "the Margaret Rayne or Crane's ship"): not accepted.
