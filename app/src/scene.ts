@@ -76,6 +76,14 @@ export class LampRoomScene {
   private lampSputter = false;
   private lampSway = 0;
   private echo = 0; // 4단계 수면 반사
+  private rain = new Graphics();
+  private silhouette = new Graphics();
+  private flashOverlay = new Sprite(Texture.WHITE);
+  private dawnOverlay = new Sprite(Texture.WHITE);
+  private weather = 0; // 0~4 폭풍 단계
+  private dawn = 0; // 0~1 새벽빛
+  private drops: { x: number; y: number; len: number; speed: number }[] = [];
+  private silhouetteShown = false;
   private timelines = new Set<Timeline>();
 
   async init(parent: HTMLElement) {
@@ -100,7 +108,26 @@ export class LampRoomScene {
     this.fog.tint = 0xcfd8e0;
 
     const world = new Container();
-    world.addChild(this.bg, this.waves, this.reflection, this.shipGlow, this.shipCore, this.fog, this.frame, this.lampGlow, this.vignette);
+    this.dawnOverlay.tint = 0x8a95a3;
+    this.dawnOverlay.alpha = 0;
+    this.flashOverlay.tint = 0xdfe8ff;
+    this.flashOverlay.alpha = 0;
+    this.silhouette.alpha = 0;
+    world.addChild(
+      this.bg,
+      this.dawnOverlay,
+      this.silhouette,
+      this.waves,
+      this.reflection,
+      this.shipGlow,
+      this.shipCore,
+      this.rain,
+      this.fog,
+      this.flashOverlay,
+      this.frame,
+      this.lampGlow,
+      this.vignette,
+    );
     this.app.stage.addChild(world);
 
     this.layout();
@@ -121,8 +148,13 @@ export class LampRoomScene {
     this.bg.texture = backgroundTexture(w, h);
     this.bg.width = w;
     this.bg.height = h;
-    this.fog.width = w;
-    this.fog.height = h;
+    for (const o of [this.fog, this.flashOverlay]) {
+      o.width = w;
+      o.height = h;
+    }
+    this.dawnOverlay.width = w;
+    this.dawnOverlay.height = h * HORIZON;
+    this.drawSilhouette();
     this.vignette.position.set(w / 2, h / 2);
     this.vignette.width = w * 1.5;
     this.vignette.height = h * 1.5;
@@ -139,6 +171,17 @@ export class LampRoomScene {
     f.rect(0, h * 0.82, w, h * 0.18).fill({ color: 0x07080a });
     f.rect(0, h * 0.82, w, 3).fill({ color: 0x2a2520, alpha: 0.8 });
     this.applyStage();
+  }
+
+  // 번개가 칠 때 딱 한 번 드러나는 부서진 여객선의 형체(docs/05)
+  private drawSilhouette() {
+    const { x, y } = this.shipPos();
+    const u = Math.max(0.6, this.h / 900) * 40;
+    const g = this.silhouette;
+    g.clear();
+    g.poly([x - 4 * u, y, x - 3.2 * u, y - 0.9 * u, x - 1.2 * u, y - 1.1 * u, x - 0.8 * u, y - 2.4 * u, x - 0.4 * u, y - 2.4 * u, x - 0.3 * u, y - 1.2 * u, x + 1.6 * u, y - 1.0 * u, x + 2.2 * u, y - 0.2 * u, x + 3.4 * u, y + 0.4 * u])
+      .fill({ color: 0x05070a });
+    g.rect(x + 0.6 * u, y - 2.9 * u, 0.12 * u, 1.9 * u).fill({ color: 0x05070a });
   }
 
   private shipPos() {
@@ -179,18 +222,22 @@ export class LampRoomScene {
     this.reflection.alpha = 0.08 + 0.3 * this.shipIntensity + this.echo;
     this.shipCore.tint = this.shipGlow.tint = this.reflection.tint = this.shipColor;
 
-    let lamp = 0.85 + 0.05 * Math.sin(this.time * 2.1) + this.lampPulse * 0.5;
+    let lamp = 0.85 + (0.05 + this.weather * 0.02) * Math.sin(this.time * (2.1 + this.weather)) + this.lampPulse * 0.5;
     if (this.lampSputter) lamp = 0.35 + Math.random() * 0.6;
     this.lampGlow.alpha = lamp;
     this.lampGlow.rotation = Math.sin(this.time * 9) * 0.03 * this.lampSway;
     this.lampGlow.x = this.w / 2 + Math.sin(this.time * 7) * this.w * 0.02 * this.lampSway;
+
+    this.dawnOverlay.alpha = this.dawn * 0.55;
+    this.bg.tint = lerpColor(0xffffff, 0xc4ccd6, this.dawn);
+    this.drawRain(dtMs);
 
     const g = this.waves;
     g.clear();
     const hy = this.h * HORIZON;
     for (let i = 0; i < 18; i++) {
       const y = hy + ((i + 1) ** 1.6) * this.h * 0.004;
-      const drift = Math.sin(this.time * 0.6 + i) * 20;
+      const drift = Math.sin(this.time * (0.6 + this.weather * 0.5) + i) * (20 + this.weather * 12);
       g.moveTo(-20 + drift, y).lineTo(this.w + 20 + drift, y).stroke({ width: 1, color: 0x6b7c8f, alpha: 0.05 + 0.02 * Math.sin(this.time + i * 1.7) });
     }
   }
@@ -293,6 +340,75 @@ export class LampRoomScene {
   // 0→1 전환: 등불이 한 번 크게 흔들린다
   async sway() {
     await this.play(Array.from({ length: 21 }, (_, i) => ({ ms: 60, v: 1 - i / 20 })), (v) => (this.lampSway = v));
+    this.lampSway = 0;
+  }
+
+  private drawRain(dtMs: number) {
+    const want = [0, 70, 160, 220, 260][this.weather];
+    while (this.drops.length < want) this.drops.push({ x: Math.random() * this.w, y: Math.random() * this.h, len: 8 + Math.random() * 18, speed: 0.6 + Math.random() * 0.6 });
+    if (this.drops.length > want) this.drops.length = want;
+    const g = this.rain;
+    g.clear();
+    const slant = 0.15 + this.weather * 0.08;
+    for (const d of this.drops) {
+      d.y += d.speed * dtMs;
+      d.x += d.speed * dtMs * slant;
+      if (d.y > this.h) {
+        d.y = -d.len;
+        d.x = Math.random() * this.w;
+      }
+      g.moveTo(d.x, d.y).lineTo(d.x + d.len * slant, d.y + d.len).stroke({ width: 1, color: 0x9fb0c4, alpha: 0.18 });
+    }
+  }
+
+  setWeather(phase: number) {
+    this.weather = Math.min(4, phase);
+  }
+
+  setDawn(p: number) {
+    this.dawn = p;
+  }
+
+  // 번개. showShip이면 배의 실루엣이 아주 짧게 드러난다(게임 전체에서 한 번)
+  async lightning(showShip: boolean) {
+    const reveal = showShip && !this.silhouetteShown;
+    if (reveal) this.silhouetteShown = true;
+    await this.play(
+      [
+        { ms: 70, v: 0.55 },
+        { ms: 90, v: 0 },
+        { ms: 160, v: 0.35 },
+        { ms: 400, v: 0 },
+      ],
+      (v) => {
+        this.flashOverlay.alpha = v;
+        this.silhouette.alpha = reveal && v > 0 ? 1 : 0;
+      },
+    );
+  }
+
+  // 수칙 3의 유혹: 같은 간격의 세 번 깜빡임, 그 뒤 희미한 빛이 windowMs 동안 남는다
+  async threeFlashes(windowMs: number) {
+    this.shipColor = WHITE;
+    for (let i = 0; i < 3; i++) await this.flash(0.9, 380, 380);
+    await this.play([{ ms: windowMs, v: 0.12 }], (v) => (this.target = v));
+    this.target = 0;
+  }
+
+  // 세 번 깜빡임에 대답했을 때: 배의 불빛이 한 번 길게 밝아진다
+  async longGlow() {
+    await this.play([{ ms: 1800, v: 1 }, { ms: 800, v: 0 }], (v) => (this.target = v));
+  }
+
+  // 서약으로 회복할 때: 등불이 한 번 따뜻하게 밝아진다
+  async warmPulse() {
+    await this.play(Array.from({ length: 20 }, (_, i) => ({ ms: 60, v: Math.sin((i / 19) * Math.PI) })), (v) => (this.lampPulse = v));
+    this.lampPulse = 0;
+  }
+
+  // 35분 마지막 경고: 등불이 크게 흔들린다
+  async bigSway() {
+    await this.play(Array.from({ length: 30 }, (_, i) => ({ ms: 60, v: 2 * (1 - i / 29) })), (v) => (this.lampSway = v));
     this.lampSway = 0;
   }
 

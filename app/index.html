@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Answer in Light</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Gowun+Batang&family=Nanum+Pen+Script&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Gowun+Batang&family=Nanum+Pen+Script&family=Cormorant+Garamond:ital@1&family=Patrick+Hand&family=Caveat:wght@500&family=IM+Fell+English&family=Kalam&display=swap" rel="stylesheet" />
   </head>
   <body>
     <div id="scene"></div>
@@ -40,9 +40,18 @@
       <input id="name" maxlength="20" autocomplete="off" />
       <button type="button" class="primary" id="start-btn"></button>
     </div>
-    <div class="overlay" id="ending" hidden>
-      <p id="ending-text"></p>
-      <button type="button" class="primary" id="restart"></button>
+    <section class="record" id="record" hidden>
+      <h2 id="record-title"></h2>
+      <div class="record-note" id="record-note" role="textbox"></div>
+      <div class="note-foot">
+        <span class="counter" id="record-counter"></span>
+        <div class="record-docs" id="record-docs"></div>
+        <button type="button" class="lever" id="record-submit"></button>
+      </div>
+    </section>
+    <div class="overlay pause" id="pause" hidden>
+      <h2 id="pause-title"></h2>
+      <button type="button" class="primary" id="pause-resume"></button>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

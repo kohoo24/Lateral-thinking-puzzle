@@ -1,7 +1,7 @@
 // 질문 입력창(종이 쪽지). 한글 조합 입력, 끼어드는 단어, 단계별 글자 수 제한을 다룬다(docs/05).
 // 입력창 내용은 "글자"와 "끼어든 단어" 조각의 목록으로 보고, 끼어든 단어는 파란 잉크 span으로 그린다.
 
-type Segment = { kind: "text"; value: string } | { kind: "intruded"; word: string };
+type Segment = { kind: "text"; value: string } | { kind: "intruded"; word: string } | { kind: "erasing"; value: string };
 
 export type NoteContent = {
   judgeText: string; // 판정에 보낼 문장(끼어든 단어 제외)
@@ -12,6 +12,7 @@ export type NoteContent = {
 export class NoteInput {
   private composing = false;
   private idleTimer: number | undefined;
+  private eraseTimer: number | undefined;
   private enabled = true;
 
   constructor(
@@ -21,7 +22,8 @@ export class NoteInput {
       limit: () => number;
       showCounter: () => boolean;
       onSubmit: () => void;
-      onIdle: () => void; // 입력을 멈추고 0.5초 뒤(한글은 조합이 끝난 뒤부터 센다)
+      onIdle?: () => void; // 입력을 멈추고 0.5초 뒤(한글은 조합이 끝난 뒤부터 센다)
+      erase?: (text: string) => [number, number][]; // 오염 3단계부터 지워지는 단어
     },
   ) {
     el.contentEditable = "true";
@@ -70,7 +72,9 @@ export class NoteInput {
       else if (value) out.push({ kind: "text", value });
     };
     for (const node of this.el.childNodes) {
-      if (node instanceof HTMLElement && node.dataset.word) {
+      if (node instanceof HTMLElement && node.dataset.erasing) {
+        out.push({ kind: "erasing", value: node.textContent ?? "" });
+      } else if (node instanceof HTMLElement && node.dataset.word) {
         // 끼어든 단어를 일부라도 고쳤으면 더는 끼어든 단어가 아니다(남은 글자는 일반 글자)
         if (node.textContent === node.dataset.word) out.push({ kind: "intruded", word: node.dataset.word });
         else push(node.textContent ?? "");
@@ -85,6 +89,13 @@ export class NoteInput {
     this.el.replaceChildren(
       ...segs.map((s) => {
         if (s.kind === "text") return document.createTextNode(s.value);
+        if (s.kind === "erasing") {
+          const e = document.createElement("span");
+          e.className = "erasing";
+          e.dataset.erasing = "1";
+          e.textContent = s.value;
+          return e;
+        }
         const span = document.createElement("span");
         span.className = "intruded";
         span.dataset.word = s.word;
@@ -135,7 +146,7 @@ export class NoteInput {
   private afterEdit() {
     const segs = this.segments();
     const limit = this.opts.limit();
-    let total = segs.reduce((a, s) => a + (s.kind === "text" ? s.value.length : s.word.length), 0);
+    let total = segs.reduce((a, s) => a + (s.kind === "intruded" ? s.word.length : s.value.length), 0);
     const hadSpans = this.el.querySelectorAll("span").length;
     const keptSpans = segs.filter((s) => s.kind === "intruded").length;
     if (total > limit) {
@@ -157,8 +168,60 @@ export class NoteInput {
     this.updateCounter();
     window.clearTimeout(this.idleTimer);
     this.idleTimer = window.setTimeout(() => {
-      if (!this.composing && this.enabled) this.opts.onIdle();
+      if (!this.composing && this.enabled) this.opts.onIdle?.();
     }, 500);
+    if (this.opts.erase) {
+      window.clearTimeout(this.eraseTimer);
+      this.eraseTimer = window.setTimeout(() => this.markErasing(), 300);
+    }
+  }
+
+  // 입력하면 잠깐 보였다가 1초 뒤 잉크가 물에 풀리듯 사라진다(docs/05)
+  private markErasing() {
+    if (this.composing || !this.opts.erase) return;
+    const segs = this.segments();
+    const out: Segment[] = [];
+    let found = false;
+    for (const s of segs) {
+      if (s.kind !== "text") {
+        out.push(s);
+        continue;
+      }
+      const ranges = this.opts.erase(s.value);
+      let pos = 0;
+      for (const [a, b] of ranges) {
+        if (a > pos) out.push({ kind: "text", value: s.value.slice(pos, a) });
+        out.push({ kind: "erasing", value: s.value.slice(a, b) });
+        pos = b;
+        found = true;
+      }
+      if (pos < s.value.length) out.push({ kind: "text", value: s.value.slice(pos) });
+    }
+    if (!found) return;
+    const caret = this.caretIndex();
+    this.render(out);
+    if (caret != null) this.setCaret(caret);
+    window.setTimeout(() => this.removeErasing(), 800);
+  }
+
+  private removeErasing() {
+    if (this.composing) {
+      window.setTimeout(() => this.removeErasing(), 300);
+      return;
+    }
+    const segs = this.segments();
+    if (!segs.some((s) => s.kind === "erasing")) return;
+    const caret = this.caretIndex();
+    let removedBefore = 0;
+    let pos = 0;
+    for (const s of segs) {
+      const len = s.kind === "intruded" ? s.word.length : s.value.length;
+      if (s.kind === "erasing" && caret != null && pos < caret) removedBefore += Math.min(len, caret - pos);
+      pos += len;
+    }
+    this.render(segs.filter((s) => s.kind !== "erasing"));
+    if (caret != null) this.setCaret(caret - removedBefore);
+    this.updateCounter();
   }
 
   updateCounter() {
@@ -175,7 +238,7 @@ export class NoteInput {
     let pos = 0;
     let inserted = false;
     for (const s of segs) {
-      const len = s.kind === "text" ? s.value.length : s.word.length;
+      const len = s.kind === "intruded" ? s.word.length : s.value.length;
       if (!inserted && s.kind === "text" && index >= pos && index <= pos + len) {
         const at = index - pos;
         out.push({ kind: "text", value: s.value.slice(0, at) + " " });
@@ -203,7 +266,7 @@ export class NoteInput {
     const squash = (t: string) => t.replace(/\s+/g, " ").trim();
     return {
       judgeText: squash(segs.map((s) => (s.kind === "text" ? s.value : " ")).join("")),
-      displayText: squash(segs.map((s) => (s.kind === "text" ? s.value : s.word)).join("")),
+      displayText: squash(segs.map((s) => (s.kind === "text" ? s.value : s.kind === "intruded" ? s.word : " ")).join("")),
       intruded: segs.flatMap((s) => (s.kind === "intruded" ? [s.word] : [])),
     };
   }

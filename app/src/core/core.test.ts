@@ -61,8 +61,8 @@ describe("오염 단계(docs/01)", () => {
 
   test("끼어든 배의 이름을 지우지 않고 보내면 +5, 판정이 이미 위반을 잡았으면 중복하지 않는다", () => {
     const s = newGame("Jin", "en");
-    expect(applyResult(s, "q", ["Thomas Hale"], r(), true).state.score).toBe(6);
-    expect(applyResult(s, "q", ["Thomas Hale"], r({ contamination: 8, rule4: true }), true).state.score).toBe(8);
+    expect(applyResult(s, "q", ["Thomas Hale"], r(), { shipNameKept: true }).state.score).toBe(6);
+    expect(applyResult(s, "q", ["Thomas Hale"], r({ contamination: 8, rule4: true }), { shipNameKept: true }).state.score).toBe(8);
   });
 
   test("입력 분량은 단계별 비율로 줄어든다", () => {

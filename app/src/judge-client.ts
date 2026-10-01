@@ -29,3 +29,29 @@ export async function askJudge(sessionId: string, text: string): Promise<JudgeRe
     return NO_REACH;
   }
 }
+
+async function post(path: string, body: unknown, timeoutMs: number): Promise<any | null> {
+  try {
+    const res = await fetch(`${JUDGE_URL}${path}`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+    return res.ok ? await res.json() : null;
+  } catch {
+    return null;
+  }
+}
+
+// 서약 판정. 실패하면 null(서약서는 쓰이지 않고 남는다)
+export async function askOath(sessionId: string, text: string, playerName: string): Promise<boolean | null> {
+  const data = await post("/v1/oath", { sessionId, text, playerName }, 10_000);
+  return data ? Boolean(data.valid) : null;
+}
+
+// 최종 제출 판정: 인정된 핵심 개수. 실패하면 null
+export async function askSubmission(sessionId: string, text: string): Promise<number | null> {
+  const data = await post("/v1/submission", { sessionId, text }, 15_000);
+  return data && typeof data.count === "number" ? data.count : null;
+}
