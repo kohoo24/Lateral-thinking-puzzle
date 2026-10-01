@@ -39,7 +39,6 @@ const facts = koFacts.map((f) => {
 });
 
 // ---------- 검증 질문 세트 ----------
-const tests = fs.readFileSync(path.join(docs, "03_검증_질문_세트.md"), "utf8");
 const LIGHT: Record<string, string> = {
   "예": "yes",
   "아니오": "no",
@@ -59,48 +58,57 @@ type QuestionTest = {
   note: string;
 };
 
-const questions: QuestionTest[] = [];
-const oaths: { id: string; text: string; expectedValid: boolean; note: string }[] = [];
-const submissions: { id: string; text: string; expectedCount: number; note: string }[] = [];
+// 검증 질문 세트(docs/03)와 별도 검증 세트(docs/09)는 같은 표 형식이다.
+function parseTests(file: string) {
+  const tests = fs.readFileSync(path.join(docs, file), "utf8");
+  const questions: QuestionTest[] = [];
+  const oaths: { id: string; text: string; expectedValid: boolean; note: string }[] = [];
+  const submissions: { id: string; text: string; expectedCount: number; note: string }[] = [];
 
-for (const r of tableRows(tests)) {
-  const id = r[0];
-  const sec = id.match(/^([A-J])\d/)?.[1];
-  if (!sec) continue;
-  if (sec === "I") {
-    oaths.push({ id, text: r[1], expectedValid: r[2] === "유효", note: r[3] });
-    continue;
+  for (const r of tableRows(tests)) {
+    const id = r[0];
+    const sec = id.match(/^([A-J])\d/)?.[1];
+    if (!sec) continue;
+    if (sec === "I") {
+      oaths.push({ id, text: r[1], expectedValid: r[2] === "유효", note: r[3] });
+      continue;
+    }
+    if (sec === "J") {
+      submissions.push({ id, text: r[1], expectedCount: Number(r[2]), note: r[3] });
+      continue;
+    }
+    const isH = sec === "H";
+    const light = LIGHT[isH ? r[4] : r[3]];
+    if (!light) throw new Error(`${id}: 알 수 없는 기대 결과 ${r[3]}`);
+    const note = isH ? r[5] : r[4];
+    // 배 자신 관련 기대값: 반전 근거가 있으면 관련, 열린·메타 질문은 채점하지 않음
+    let self: boolean | null;
+    if (sec === "G" || light === "send_again") self = null;
+    else if (note.includes("반전") || note.includes("배 자신 관련이지만")) self = true;
+    else self = false;
+    questions.push({
+      id,
+      section: sec,
+      group: sec === "B" ? id.split("-")[0] : null,
+      en: r[1],
+      ko: r[2],
+      expectedLight: light,
+      expectedRule4: isH ? r[3] === "위반" : false,
+      expectedSelfRelated: self,
+      note,
+    });
   }
-  if (sec === "J") {
-    submissions.push({ id, text: r[1], expectedCount: Number(r[2]), note: r[3] });
-    continue;
-  }
-  const isH = sec === "H";
-  const light = LIGHT[isH ? r[4] : r[3]];
-  if (!light) throw new Error(`${id}: 알 수 없는 기대 결과 ${r[3]}`);
-  const note = isH ? r[5] : r[4];
-  // 배 자신 관련 기대값: 반전 근거가 있으면 관련, 열린·메타 질문은 채점하지 않음
-  let self: boolean | null;
-  if (sec === "G" || light === "send_again") self = null;
-  else if (note.includes("반전") || note.includes("배 자신 관련이지만")) self = true;
-  else self = false;
-  questions.push({
-    id,
-    section: sec,
-    group: sec === "B" ? id.split("-")[0] : null,
-    en: r[1],
-    ko: r[2],
-    expectedLight: light,
-    expectedRule4: isH ? r[3] === "위반" : false,
-    expectedSelfRelated: self,
-    note,
-  });
+  return { questions, oaths, submissions };
 }
 
 fs.mkdirSync(out, { recursive: true });
 fs.writeFileSync(path.join(out, "facts.json"), JSON.stringify(facts, null, 2) + "\n");
-fs.writeFileSync(
-  path.join(out, "judge-tests.json"),
-  JSON.stringify({ questions, oaths, submissions }, null, 2) + "\n",
-);
-console.log(`facts ${facts.length}, questions ${questions.length}, oaths ${oaths.length}, submissions ${submissions.length}`);
+for (const [file, name] of [
+  ["03_검증_질문_세트.md", "judge-tests.json"],
+  ["09_별도_검증_세트.md", "holdout-tests.json"],
+]) {
+  const set = parseTests(file);
+  fs.writeFileSync(path.join(out, name), JSON.stringify(set, null, 2) + "\n");
+  console.log(`${name}: questions ${set.questions.length}, oaths ${set.oaths.length}, submissions ${set.submissions.length}`);
+}
+console.log(`facts ${facts.length}`);

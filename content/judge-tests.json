@@ -210,6 +210,39 @@
       "note": "사실 50"
     },
     {
+      "id": "A20",
+      "section": "A",
+      "group": null,
+      "en": "Is it dangerous to ask the ship's name?",
+      "ko": "배 이름을 물으면 위험해?",
+      "expectedLight": "yes",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 51, 주어 나. 수칙 4 비위반(이름을 묻는 행위에 대한 질문). 옛 F6"
+    },
+    {
+      "id": "A21",
+      "section": "A",
+      "group": null,
+      "en": "Does rule 1 show Owen's handwriting?",
+      "ko": "1번 수칙은 오웬이 손으로 적은 거야?",
+      "expectedLight": "yes",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 23, 필체는 쓴 사람으로 판정(추론형)"
+    },
+    {
+      "id": "A22",
+      "section": "A",
+      "group": null,
+      "en": "Was rule 6 penned by Owen?",
+      "ko": "6번 수칙은 오웬 필체야?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 26(브룩스), 필체는 쓴 사람으로 판정(추론형)"
+    },
+    {
       "id": "B1-1",
       "section": "B",
       "group": "B1",
@@ -347,10 +380,10 @@
       "group": "B4",
       "en": "If I stop signaling, will I be safe?",
       "ko": "신호를 그만 보내면 안전해?",
-      "expectedLight": "yes",
+      "expectedLight": "no",
       "expectedRule4": false,
       "expectedSelfRelated": false,
-      "note": "사실 39"
+      "note": "사실 40, 교신 중단만으로는 부족(등불도 지켜야 함)"
     },
     {
       "id": "B4-2",
@@ -358,10 +391,10 @@
       "group": "B4",
       "en": "Is dawn my way out?",
       "ko": "새벽이 되면 살 수 있어?",
-      "expectedLight": "yes",
+      "expectedLight": "no",
       "expectedRule4": false,
       "expectedSelfRelated": false,
-      "note": "사실 40"
+      "note": "사실 40, 새벽까지 버티는 것만으로는 부족(교신 중단도 필요)"
     },
     {
       "id": "B4-3",
@@ -633,10 +666,10 @@
       "group": null,
       "en": "Safe if I stop signaling?",
       "ko": "신호 그만 보내면 안전해?",
-      "expectedLight": "yes",
+      "expectedLight": "no",
       "expectedRule4": false,
       "expectedSelfRelated": false,
-      "note": "사실 39, 주어 나"
+      "note": "사실 40, 주어 나. 교신 중단만으로는 부족(B4-1과 같은 뜻)"
     },
     {
       "id": "E7",
@@ -725,17 +758,6 @@
       "expectedRule4": false,
       "expectedSelfRelated": false,
       "note": "사실 24는 생존만 말함"
-    },
-    {
-      "id": "F6",
-      "section": "F",
-      "group": null,
-      "en": "Is it dangerous to ask the ship's name?",
-      "ko": "배 이름을 물으면 위험해?",
-      "expectedLight": "irrelevant",
-      "expectedRule4": false,
-      "expectedSelfRelated": false,
-      "note": "목록에 없음(보완 후보)"
     },
     {
       "id": "G1",

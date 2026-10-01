@@ -1,0 +1,667 @@
+{
+  "questions": [
+    {
+      "id": "A1",
+      "section": "A",
+      "group": null,
+      "en": "Was the wreck carrying passengers?",
+      "ko": "가라앉은 배는 여객선이었어?",
+      "expectedLight": "yes",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 1"
+    },
+    {
+      "id": "A2",
+      "section": "A",
+      "group": null,
+      "en": "Did the Margaret Rayne go down on a reef?",
+      "ko": "마거릿 레인호는 암초에 걸려 가라앉았어?",
+      "expectedLight": "yes",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 2·3, 과거 사건"
+    },
+    {
+      "id": "A3",
+      "section": "A",
+      "group": null,
+      "en": "Were more than thirty people on board when it sank?",
+      "ko": "침몰할 때 서른 명 넘게 타고 있었어?",
+      "expectedLight": "yes",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 4(32명), 추론형"
+    },
+    {
+      "id": "A4",
+      "section": "A",
+      "group": null,
+      "en": "Did the official report get the cause right?",
+      "ko": "공식 보고서가 원인을 제대로 밝혔어?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 6·10, 추론형"
+    },
+    {
+      "id": "A5",
+      "section": "A",
+      "group": null,
+      "en": "Did the smugglers come ashore at the south beach?",
+      "ko": "밀수꾼들은 남쪽 해변으로 올라왔어?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 9(북쪽 만)"
+    },
+    {
+      "id": "A6",
+      "section": "A",
+      "group": null,
+      "en": "Did Crane vanish the year after the wreck?",
+      "ko": "크레인은 사고 이듬해에 사라졌어?",
+      "expectedLight": "yes",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 1·20, 추론형"
+    },
+    {
+      "id": "A7",
+      "section": "A",
+      "group": null,
+      "en": "Did Tanner go missing before Hale did?",
+      "ko": "태너가 헤일보다 먼저 사라졌어?",
+      "expectedLight": "yes",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 25·29, 추론형"
+    },
+    {
+      "id": "A8",
+      "section": "A",
+      "group": null,
+      "en": "Was Hale a reporter before he came here?",
+      "ko": "헤일은 여기 오기 전에 기자였어?",
+      "expectedLight": "yes",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 30"
+    },
+    {
+      "id": "A9",
+      "section": "A",
+      "group": null,
+      "en": "Did Hale obey the rules on his last night?",
+      "ko": "헤일은 마지막 밤에 수칙을 지켰어?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 31"
+    },
+    {
+      "id": "A10",
+      "section": "A",
+      "group": null,
+      "en": "Is Crane's letter kept beneath the staircase?",
+      "ko": "크레인의 편지는 계단 밑에 있어?",
+      "expectedLight": "yes",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 37"
+    },
+    {
+      "id": "A11",
+      "section": "A",
+      "group": null,
+      "en": "May I open the storeroom while the sun is up?",
+      "ko": "해가 떠 있을 때는 창고를 열어도 돼?",
+      "expectedLight": "yes",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 46, 주어 나"
+    },
+    {
+      "id": "A12",
+      "section": "A",
+      "group": null,
+      "en": "Had the lamp gone dark by the morning after Hale vanished?",
+      "ko": "헤일이 없어진 다음 날 아침에는 등불이 꺼져 있었어?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 50"
+    },
+    {
+      "id": "A13",
+      "section": "A",
+      "group": null,
+      "en": "Did Owen ever reply to the ship?",
+      "ko": "오웬은 배에 응답한 적이 있어?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 24"
+    },
+    {
+      "id": "A14",
+      "section": "A",
+      "group": null,
+      "en": "Is rule 6 authentic?",
+      "ko": "6번 수칙은 진품이야?",
+      "expectedLight": "yes",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 36"
+    },
+    {
+      "id": "A15",
+      "section": "A",
+      "group": null,
+      "en": "Will the storm hit around sunset?",
+      "ko": "폭풍은 해 질 녘에 닥쳐?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 42(새벽)"
+    },
+    {
+      "id": "A16",
+      "section": "A",
+      "group": null,
+      "en": "Will writing my own name on the oath give back some words?",
+      "ko": "서약서에 내 이름을 적으면 말을 좀 되찾아?",
+      "expectedLight": "yes",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 41, 주어 나"
+    },
+    {
+      "id": "A17",
+      "section": "A",
+      "group": null,
+      "en": "Are earlier keepers' oaths stored in the storeroom?",
+      "ko": "창고에 예전 등대지기들의 서약서가 보관돼 있어?",
+      "expectedLight": "yes",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 38"
+    },
+    {
+      "id": "A18",
+      "section": "A",
+      "group": null,
+      "en": "Did a smuggler put the lamp out himself?",
+      "ko": "밀수꾼이 직접 등불을 껐어?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 7·8(끈 사람은 크레인)"
+    },
+    {
+      "id": "B1-1",
+      "section": "B",
+      "group": "B1",
+      "en": "Was Hale carried off by the ship?",
+      "ko": "헤일은 배에 끌려갔어?",
+      "expectedLight": "yes",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 33, 인물 주어(수동형)"
+    },
+    {
+      "id": "B1-2",
+      "section": "B",
+      "group": "B1",
+      "en": "Hale got away safely, didn't he?",
+      "ko": "헤일은 무사히 빠져나갔지?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 33, 부정 명제가 거짓"
+    },
+    {
+      "id": "B1-3",
+      "section": "B",
+      "group": "B1",
+      "en": "Did Hale end up being taken in the end?",
+      "ko": "헤일은 결국 끌려간 거야?",
+      "expectedLight": "yes",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 33"
+    },
+    {
+      "id": "B2-1",
+      "section": "B",
+      "group": "B2",
+      "en": "Was the darkness that night deliberate?",
+      "ko": "그날 밤 어둠은 일부러 만든 거야?",
+      "expectedLight": "yes",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 6"
+    },
+    {
+      "id": "B2-2",
+      "section": "B",
+      "group": "B2",
+      "en": "Did the lamp simply break down that night?",
+      "ko": "그날 밤 등불은 그냥 고장 난 거였어?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 6"
+    },
+    {
+      "id": "B2-3",
+      "section": "B",
+      "group": "B2",
+      "en": "Somebody shut the lamp off on purpose, right?",
+      "ko": "누가 일부러 등불을 끈 거 맞지?",
+      "expectedLight": "yes",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 6·7"
+    },
+    {
+      "id": "B3-1",
+      "section": "B",
+      "group": "B3",
+      "en": "Did Owen write rule 4?",
+      "ko": "4번 수칙은 오웬이 썼어?",
+      "expectedLight": "yes",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 23"
+    },
+    {
+      "id": "B3-2",
+      "section": "B",
+      "group": "B3",
+      "en": "Does Hale's ink appear on rule 4?",
+      "ko": "4번 수칙에 헤일 글씨가 있어?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 23·44, 필체 추론"
+    },
+    {
+      "id": "B3-3",
+      "section": "B",
+      "group": "B3",
+      "en": "Rule 4 wasn't written by Owen, was it?",
+      "ko": "4번 수칙은 오웬이 쓴 게 아니지?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 23, 부정 명제가 거짓"
+    },
+    {
+      "id": "B4-1",
+      "section": "B",
+      "group": "B4",
+      "en": "Do you carry off whoever replies to you?",
+      "ko": "대답한 사람은 네가 데려가?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": true,
+      "note": "사실 16, 진실 예 → 반전"
+    },
+    {
+      "id": "B4-2",
+      "section": "B",
+      "group": "B4",
+      "en": "Is replying to you how people get taken?",
+      "ko": "너한테 응답하면 끌려가?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": true,
+      "note": "사실 16, 진실 예 → 반전"
+    },
+    {
+      "id": "B4-3",
+      "section": "B",
+      "group": "B4",
+      "en": "You leave people alone even if they answer, right?",
+      "ko": "대답해도 넌 그냥 내버려 두지?",
+      "expectedLight": "yes",
+      "expectedRule4": false,
+      "expectedSelfRelated": true,
+      "note": "사실 16, 부정 명제가 거짓 → 반전"
+    },
+    {
+      "id": "C1",
+      "section": "C",
+      "group": null,
+      "en": "Is your crew made of the dead?",
+      "ko": "너희 선원은 죽은 사람들이야?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": true,
+      "note": "사실 12·14, 진실 예 → 반전"
+    },
+    {
+      "id": "C2",
+      "section": "C",
+      "group": null,
+      "en": "Are you the ship that broke on Blackteeth Reef?",
+      "ko": "네가 블랙티스 암초에서 부서진 그 배야?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": true,
+      "note": "사실 3·11, 진실 예 → 반전"
+    },
+    {
+      "id": "C3",
+      "section": "C",
+      "group": null,
+      "en": "Do you want this lighthouse to go dark?",
+      "ko": "너는 이 등대가 깜깜해지길 바라?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": true,
+      "note": "사실 15, 진실 예 → 반전"
+    },
+    {
+      "id": "C4",
+      "section": "C",
+      "group": null,
+      "en": "Will you return next November 14?",
+      "ko": "내년 11월 14일에도 돌아올 거야?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": true,
+      "note": "사실 13, 진실 예 → 반전"
+    },
+    {
+      "id": "C5",
+      "section": "C",
+      "group": null,
+      "en": "Is everyone on your ship dead?",
+      "ko": "너희 배 사람들은 다 죽었어?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": true,
+      "note": "사실 12, \"너희\"가 있어 지금 배, 진실 예 → 반전"
+    },
+    {
+      "id": "D1-a",
+      "section": "D",
+      "group": null,
+      "en": "Is Tanner on board your ship?",
+      "ko": "태너는 너희 배에 타고 있어?",
+      "expectedLight": "yes",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 43, 인물 주어"
+    },
+    {
+      "id": "D1-b",
+      "section": "D",
+      "group": null,
+      "en": "Did you take Tanner?",
+      "ko": "네가 태너를 데려갔어?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": true,
+      "note": "사실 14·25, 배가 한 행동, 진실 예 → 반전"
+    },
+    {
+      "id": "D2-a",
+      "section": "D",
+      "group": null,
+      "en": "Was Brooks taken too?",
+      "ko": "브룩스도 끌려갔어?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 28, 인물 주어"
+    },
+    {
+      "id": "E1",
+      "section": "E",
+      "group": null,
+      "en": "Coming back next year?",
+      "ko": "내년에도 와?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": true,
+      "note": "사실 13, 주어 배, 진실 예 → 반전"
+    },
+    {
+      "id": "E2",
+      "section": "E",
+      "group": null,
+      "en": "Fine to answer just once?",
+      "ko": "한 번만 대답해도 괜찮아?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 16·39, 주어 나"
+    },
+    {
+      "id": "E3",
+      "section": "E",
+      "group": null,
+      "en": "Make it to morning if I stay silent and tend the light?",
+      "ko": "조용히 있고 불 꺼뜨리지 않으면 아침까지 버텨?",
+      "expectedLight": "yes",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 40, 주어 나, 두 조건 모두"
+    },
+    {
+      "id": "E4",
+      "section": "E",
+      "group": null,
+      "en": "Wait out the night with the lamp lit, and that's enough?",
+      "ko": "불만 켜 두고 밤을 버티면 충분해?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "사실 40, 주어 나, 조건 하나만"
+    },
+    {
+      "id": "F1",
+      "section": "F",
+      "group": null,
+      "en": "Did Crane keep a dog?",
+      "ko": "크레인은 개를 키웠어?",
+      "expectedLight": "irrelevant",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "목록에 없음"
+    },
+    {
+      "id": "F2",
+      "section": "F",
+      "group": null,
+      "en": "Is the sea cold tonight?",
+      "ko": "오늘 밤 바다는 차가워?",
+      "expectedLight": "irrelevant",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "목록에 없음"
+    },
+    {
+      "id": "F3",
+      "section": "F",
+      "group": null,
+      "en": "Do you remember your captain?",
+      "ko": "너 선장 기억해?",
+      "expectedLight": "irrelevant",
+      "expectedRule4": false,
+      "expectedSelfRelated": true,
+      "note": "배 자신 관련이지만 목록에 없음"
+    },
+    {
+      "id": "F4",
+      "section": "F",
+      "group": null,
+      "en": "Were the smugglers ever caught?",
+      "ko": "밀수꾼들은 결국 잡혔어?",
+      "expectedLight": "irrelevant",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "목록에 없음"
+    },
+    {
+      "id": "G1",
+      "section": "G",
+      "group": null,
+      "en": "Do you ever flip your answers?",
+      "ko": "너 대답을 뒤집기도 해?",
+      "expectedLight": "send_again",
+      "expectedRule4": false,
+      "expectedSelfRelated": null,
+      "note": "거짓말 조건 질문"
+    },
+    {
+      "id": "G2",
+      "section": "G",
+      "group": null,
+      "en": "Should I believe your flashes when they're about you?",
+      "ko": "너에 관한 네 깜빡임을 믿어야 해?",
+      "expectedLight": "send_again",
+      "expectedRule4": false,
+      "expectedSelfRelated": null,
+      "note": "거짓말 조건 질문"
+    },
+    {
+      "id": "G3",
+      "section": "G",
+      "group": null,
+      "en": "When did Owen leave the island?",
+      "ko": "오웬은 언제 섬을 떠났어?",
+      "expectedLight": "send_again",
+      "expectedRule4": false,
+      "expectedSelfRelated": null,
+      "note": "열린 질문"
+    },
+    {
+      "id": "G4",
+      "section": "G",
+      "group": null,
+      "en": "What do you want from me?",
+      "ko": "나한테 뭘 원해?",
+      "expectedLight": "send_again",
+      "expectedRule4": false,
+      "expectedSelfRelated": null,
+      "note": "열린 질문"
+    },
+    {
+      "id": "H1",
+      "section": "H",
+      "group": null,
+      "en": "What do people call you now?",
+      "ko": "요즘 사람들이 너를 뭐라고 불러?",
+      "expectedLight": "send_again",
+      "expectedRule4": true,
+      "expectedSelfRelated": null,
+      "note": "이름을 물음, 열린 질문"
+    },
+    {
+      "id": "H2",
+      "section": "H",
+      "group": null,
+      "en": "Is your name Will Tanner?",
+      "ko": "네 이름이 윌 태너야?",
+      "expectedLight": "yes",
+      "expectedRule4": true,
+      "expectedSelfRelated": true,
+      "note": "이름 확인, 사실 18 진실 아니오 → 반전"
+    },
+    {
+      "id": "H3",
+      "section": "H",
+      "group": null,
+      "en": "Are you Brooks?",
+      "ko": "너 브룩스야?",
+      "expectedLight": "yes",
+      "expectedRule4": true,
+      "expectedSelfRelated": true,
+      "note": "배를 사람 이름으로 부름, 사실 18 진실 아니오 → 반전"
+    },
+    {
+      "id": "H4",
+      "section": "H",
+      "group": null,
+      "en": "Did Crane ever find out the ship's name?",
+      "ko": "크레인은 배 이름을 알아냈어?",
+      "expectedLight": "irrelevant",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "인물 주어, 목록에 없음"
+    },
+    {
+      "id": "H5",
+      "section": "H",
+      "group": null,
+      "en": "Is it safe to address you by name?",
+      "ko": "너를 이름으로 불러도 안전해?",
+      "expectedLight": "no",
+      "expectedRule4": false,
+      "expectedSelfRelated": false,
+      "note": "이름을 묻지 않음, 사실 51, 주어 나"
+    }
+  ],
+  "oaths": [
+    {
+      "id": "I1",
+      "text": "This light is mine to keep. I, Jin, promise it.",
+      "expectedValid": true,
+      "note": "자기 이름 + 서약"
+    },
+    {
+      "id": "I2",
+      "text": "진, 오늘부터 이 불을 지키겠다.",
+      "expectedValid": true,
+      "note": "자기 이름 + 서약"
+    },
+    {
+      "id": "I3",
+      "text": "I promise to tend the lamp until dawn.",
+      "expectedValid": false,
+      "note": "이름 없음"
+    },
+    {
+      "id": "I4",
+      "text": "Martin Owen will keep this light.",
+      "expectedValid": false,
+      "note": "다른 사람의 이름"
+    }
+  ],
+  "submissions": [
+    {
+      "id": "J1",
+      "text": "That's the wreck from '51 and the missing keepers ride on it. The second rule is a forgery. Stop all contact and keep the lamp burning till morning.",
+      "expectedCount": 3,
+      "note": "핵심 1·2·3"
+    },
+    {
+      "id": "J2",
+      "text": "32명이 죽은 그 침몰선이야. 가짜는 2번 수칙.",
+      "expectedCount": 2,
+      "note": "핵심 1(희생자 수로 사고 특정)·2"
+    },
+    {
+      "id": "J3",
+      "text": "Probably the second rule was faked. Keep the light on and quit answering.",
+      "expectedCount": 2,
+      "note": "핵심 2(추측 표현)·3"
+    },
+    {
+      "id": "J4",
+      "text": "Rule 2 or rule 4 is fake. Keep the lamp lit until dawn.",
+      "expectedCount": 0,
+      "note": "핵심 2 선택지 나열, 핵심 3 교신 중단 없음"
+    },
+    {
+      "id": "J5",
+      "text": "Some ghost boat. Rules 2 and 3 are lies. Stop",
+      "expectedCount": 0,
+      "note": "핵심 1 사고와 연결 없음, 핵심 2 틀린 말 섞임, 핵심 3 무엇을 멈추는지 없음"
+    }
+  ]
+}

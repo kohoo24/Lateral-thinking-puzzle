@@ -34,7 +34,7 @@ test("질문 판정: System One 요청 형식과 확률 → 판정 변환", asyn
   assert.equal(calls[0].headers.Authorization, "Bearer test-key");
   assert.equal(calls[0].body.model, "jev-latest");
   assert.equal(calls[0].body.state.player_question, "너 매년 돌아와?");
-  assert.equal(calls[0].body.state.facts.length, 50);
+  assert.equal(calls[0].body.state.facts.length, 51);
   assert.deepEqual(
     Object.fromEntries(Object.entries(calls[0].body.questions).map(([k, q]: [string, any]) => [k, q.type])),
     { question_type: "choice", subject: "choice", self_related: "noul", proposition_truth: "choice", rule4_violation: "noul" },

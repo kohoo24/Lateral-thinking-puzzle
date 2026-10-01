@@ -12,14 +12,16 @@
     <div id="ui">
       <aside class="card" id="card"></aside>
       <section class="gauge" id="gauge">
-        <div class="gauge-label" id="gauge-label"></div>
+        <div class="gauge-head"><span class="gauge-label" id="gauge-label"></span><span class="gauge-count" id="gauge-count"></span></div>
         <div class="cells" id="cells"></div>
+        <p class="gauge-note" id="gauge-note"></p>
       </section>
       <section class="log" id="log-panel">
         <h2 id="log-title"></h2>
         <ol id="log"></ol>
       </section>
       <p class="message" id="message" aria-live="polite"></p>
+      <p class="hint" id="hint" hidden></p>
       <section class="note-wrap" id="note-wrap">
         <div class="note" id="note" role="textbox" aria-multiline="false"></div>
         <div class="note-foot">
@@ -28,6 +30,7 @@
         </div>
       </section>
       <pre class="debug" id="debug" hidden></pre>
+      <button type="button" class="help-btn" id="help-btn" hidden></button>
     </div>
     <div class="overlay" id="start">
       <h1>Answer in Light</h1>
@@ -49,6 +52,10 @@
         <button type="button" class="lever" id="record-submit"></button>
       </div>
     </section>
+    <div class="overlay intro" id="intro" hidden>
+      <div class="intro-page" id="intro-page"></div>
+      <button type="button" class="primary" id="intro-next"></button>
+    </div>
     <div class="overlay pause" id="pause" hidden>
       <h2 id="pause-title"></h2>
       <button type="button" class="primary" id="pause-resume"></button>

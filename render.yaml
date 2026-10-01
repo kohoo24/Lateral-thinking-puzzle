@@ -1,0 +1,27 @@
+# Render 블루프린트(DEPLOY.md 참고). 대시보드에서 New > Blueprint로 이 저장소를 고르면 아래 설정으로 만들어진다.
+services:
+  - type: web
+    name: answer-in-light
+    runtime: docker
+    # 무료 플랜은 15분 동안 접속이 없으면 잠들어, 깨어나는 동안(약 1분)의 첫 질문이 "신호가 닿지 않음"이 된다
+    plan: starter
+    healthCheckPath: /healthz
+    # 플레이 기록(JUDGE_LOG_DIR=/srv/logs)이 재배포 뒤에도 남도록 디스크를 붙인다.
+    # 디스크가 있으면 무중단 배포가 꺼져 배포 때 1분 안팎 서버가 내려간다
+    disk:
+      name: play-logs
+      mountPath: /srv/logs
+      sizeGB: 1
+    envVars:
+      - key: TYPESAFE_API_KEY
+        sync: false
+      - key: JUDGE_DAILY_CALL_LIMIT
+        value: "2000"
+      - key: SESSIONS_PER_IP_PER_HOUR
+        value: "6"
+      # Render 앞에는 Cloudflare가 있어 x-forwarded-for 끝 칸이 Cloudflare 주소다(배포 후 /healthz 진단으로 확인).
+      # Cloudflare가 덮어쓰는 cf-connecting-ip로 플레이어 주소를 읽는다
+      - key: CLIENT_IP_HEADER
+        value: cf-connecting-ip
+      - key: LOG_ACCESS_TOKEN
+        generateValue: true

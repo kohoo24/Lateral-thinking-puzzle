@@ -1,5 +1,5 @@
 // 등대 안 다섯 곳(docs/07). 등실은 PixiJS 장면이고, 나머지는 아트가 들어오기 전까지 임시 화면으로 그린다.
-import { artUrl, ROOM_ART } from "../content/art";
+import { artUrl, ROOM_ART, shapeBox, type Shape } from "../content/art";
 import type { Strings } from "../i18n";
 import { el } from "./dom";
 
@@ -15,6 +15,9 @@ const LINKS: Record<RoomId, RoomId[]> = {
   entrance: ["stairs"],
 };
 
+// 이동 버튼의 화살표: 위층이면 ↑, 아래층이면 ↓
+const FLOOR: Record<RoomId, number> = { lamp: 4, watch: 3, stairs: 2, storeroom: 1, entrance: 1 };
+
 const HOTSPOTS: Record<RoomId, Hotspot[]> = {
   lamp: [],
   watch: ["journal", "journalBack", "frame", "clock", "record"],
@@ -25,8 +28,14 @@ const HOTSPOTS: Record<RoomId, Hotspot[]> = {
 
 export class Rooms {
   current: RoomId = "lamp";
+  // 한 번이라도 이동하기 전까지 이동 버튼을 은은하게 깜빡여 눈에 띄게 한다
+  moved = false;
   private overlay = el("div", "room");
   private nav = el("nav", "roomnav");
+  // 방 그림: 주소를 찾고 실제로 디코딩까지 끝낸 것(없으면 null). 그림이 준비된 뒤에 방을 그려야
+  // 소품 버튼이 먼저 보였다가 그림 위로 옮겨지는 깜빡임이 없다
+  private art = new Map<RoomId, Promise<string | null>>();
+  private artReady = new Map<RoomId, string | null>();
 
   constructor(
     private t: () => Strings,
@@ -42,32 +51,63 @@ export class Rooms {
     this.render();
   }
 
+  // 방 그림을 미리 불러 둔다(게임 시작 때 한 번)
+  preload() {
+    for (const room of Object.keys(ROOM_ART) as RoomId[]) void this.loadArt(room);
+  }
+
+  private loadArt(room: RoomId): Promise<string | null> {
+    if (!this.art.has(room)) {
+      const file = ROOM_ART[room]?.file;
+      this.art.set(
+        room,
+        (async () => {
+          const url = file ? await artUrl(file) : null;
+          if (!url) return null;
+          const img = new Image();
+          img.src = url;
+          await img.decode().catch(() => undefined);
+          return url;
+        })().then((url) => {
+          this.artReady.set(room, url);
+          return url;
+        }),
+      );
+    }
+    return this.art.get(room)!;
+  }
+
   async go(room: RoomId) {
     if (!(await this.opts.canEnter(room))) return;
+    this.moved = true;
     document.body.classList.add("moving");
-    await new Promise((r) => setTimeout(r, 450));
+    // 화면이 어두워지는 동안 그림을 준비하고, 준비된 그림과 소품을 한꺼번에 그린다
+    const [url] = await Promise.all([this.loadArt(room), new Promise((r) => setTimeout(r, 450))]);
     this.current = room;
-    this.render();
+    this.render(url);
     this.opts.onEnter(room);
     document.body.classList.remove("moving");
   }
 
   // 그림이 있으면 배경으로 깔고 소품 버튼을 그림 위 제자리에 놓는다
-  private async applyArt(room: RoomId, spots: HTMLElement, buttons: [Hotspot, HTMLButtonElement][]) {
-    const art = ROOM_ART[room];
-    const url = art && (await artUrl(art.file));
-    if (!art || !url || this.current !== room) return;
+  private applyArt(room: RoomId, url: string, spots: HTMLElement, buttons: [Hotspot, HTMLButtonElement][]) {
+    const art = ROOM_ART[room]!;
     const stage = el("div", "room-art");
     stage.style.backgroundImage = `url("${url}")`;
     for (const [h, b] of buttons) {
-      const box = art.hotspots[h];
-      if (!box) {
+      const shape = art.hotspots[h];
+      if (!shape) {
         // 그림에 자리가 없는 소품은 감춘다(예: 일지 맨 뒷장은 일지 안에서 넘긴다)
         b.remove();
         continue;
       }
+      const box = shapeBox(shape);
       b.classList.add("on-art");
       Object.assign(b.style, { left: `${box[0]}%`, top: `${box[1]}%`, width: `${box[2]}%`, height: `${box[3]}%` });
+      // 버튼은 감싸는 상자 자리에 두되, 눌리는 곳과 윤곽은 물건 모양을 따른다
+      const label = b.textContent ?? "";
+      b.setAttribute("aria-label", label);
+      b.innerHTML = `${outline(shape, box)}<span class="spot-label">${label}</span>`;
       stage.append(b);
     }
     this.overlay.prepend(stage);
@@ -75,7 +115,8 @@ export class Rooms {
     if (!spots.children.length) spots.remove();
   }
 
-  render() {
+  // url: 이 방의 그림(준비된 것). 생략하면 이미 준비된 그림을 쓴다(언어 전환 등 다시 그리기)
+  render(url: string | null = this.artReady.get(this.current) ?? null) {
     const t = this.t();
     const room = this.current;
     document.body.dataset.room = room;
@@ -95,15 +136,28 @@ export class Rooms {
         buttons.push([h, b]);
       }
       this.overlay.append(spots);
-      void this.applyArt(room, spots, buttons);
+      if (url) this.applyArt(room, url, spots, buttons);
     }
+    this.nav.classList.toggle("unmoved", !this.moved);
     this.nav.replaceChildren(
       ...LINKS[room].map((to) => {
-        const b = el("button", "", `${t.go}: ${t[`room_${to}`]}`);
+        const arrow = FLOOR[to] > FLOOR[room] ? "↑" : "↓";
+        const b = el("button", "", `<span class="arrow">${arrow}</span>${t.go}: ${t[`room_${to}`]}`);
         b.type = "button";
         b.addEventListener("click", () => void this.go(to));
         return b;
       }),
     );
   }
+}
+
+// 물건 모양을 버튼 안 SVG로 그린다. 좌표는 감싸는 상자 기준 0~100으로 바꾼다
+function outline(shape: Shape, [bx, by, bw, bh]: [number, number, number, number]): string {
+  const sx = (x: number) => (((x - bx) / bw) * 100).toFixed(2);
+  const sy = (y: number) => (((y - by) / bh) * 100).toFixed(2);
+  const body =
+    "ellipse" in shape
+      ? `<ellipse cx="50" cy="50" rx="50" ry="50" />`
+      : `<polygon points="${shape.poly.map(([x, y]) => `${sx(x)},${sy(y)}`).join(" ")}" />`;
+  return `<svg class="spot-shape" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${body}</svg>`;
 }

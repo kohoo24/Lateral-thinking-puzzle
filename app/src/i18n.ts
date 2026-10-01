@@ -6,9 +6,19 @@ const STRINGS = {
     register: "Sign the keeper's register.",
     namePlaceholder: "Your name",
     start: "Take the watch",
+    // 도입과 안내
+    next: "Next",
+    climb: "Climb to the lamp room",
+    howTitle: "Tonight",
+    help: "?",
+    helpLabel: "How to play",
+    helpBack: "Back to the watch",
+    hintLog: "The keepers before you left a log on the desk in the watch room below. Read it first.",
+    hintNext: "Look through the other rooms too. Anything you want to confirm, you can ask the ship from the lamp room.",
     placeholder: "Write your question to the ship…",
     lever: "Send signal",
-    kerosene: "Kerosene",
+    kerosene: "Lamp oil",
+    keroseneNote: "Each signal burns one cell. The red cell keeps the lamp lit.",
     log: "Signal log",
     empty: "Write a question first.",
     reserve: "The last of the oil belongs to the lamp. Hold the lever to pull it anyway.",
@@ -94,9 +104,19 @@ const STRINGS = {
     register: "등대지기 명부에 이름을 적으세요.",
     namePlaceholder: "이름",
     start: "당직 시작",
+    // 도입과 안내
+    next: "다음",
+    climb: "등실로 올라가기",
+    howTitle: "오늘 밤 할 일",
+    help: "?",
+    helpLabel: "도움말",
+    helpBack: "당직으로 돌아가기",
+    hintLog: "아래층 당직실 책상에 전임자들이 남긴 근무 일지가 있다. 먼저 읽어 보자.",
+    hintNext: "다른 방도 둘러보자. 확인하고 싶은 것은 등실에서 배에게 물어볼 수 있다.",
     placeholder: "배에게 보낼 질문을 적으세요…",
     lever: "신호 보내기",
-    kerosene: "등유",
+    kerosene: "등불 등유",
+    keroseneNote: "신호 한 번에 한 칸 · 빨간 칸은 등불 몫",
     log: "교신 기록",
     empty: "먼저 질문을 적으세요.",
     reserve: "마지막 기름은 등불 몫이다. 그래도 당기려면 레버를 길게 누르세요.",
@@ -171,6 +191,42 @@ const STRINGS = {
 
 export type Strings = (typeof STRINGS)["en"];
 export const strings = (lang: Lang): Strings => STRINGS[lang];
+
+// 도입 이야기와 "오늘 밤 할 일" 안내. 진상(가짜 수칙, 대답해야 하는지 여부)은 알려주지 않는다.
+export const INTRO: Record<Lang, { story: string[]; how: [string, string][] }> = {
+  en: {
+    story: [
+      "November 14, 1984. Dusk.",
+      "The supply boat leaves you on Belmore Isle and turns back at once to outrun the storm. It unloads a single drum of kerosene.",
+      "The lighthouse has stood empty for a year, ever since the last keeper, Thomas Hale, vanished on this same night.",
+      "Lightning has killed the radio. The storm will reach the island at dawn.",
+      "Then the sun goes down, and out on the water a light begins to signal toward the tower.",
+    ],
+    how: [
+      ["Look around", "Use the \"Go to\" buttons at the top left to move through the lighthouse, and click things to read them. The keepers before you left a log on the desk in the watch room."],
+      ["Signal the ship", "From the lamp room at the top, write a question that can be answered yes or no, then press \"Send signal\". The ship answers only in light. The card at the top left says what each light means."],
+      ["Kerosene", "Each signal burns one cell of kerosene. The last red cell belongs to the lamp."],
+      ["Tonight's record", "Before dawn, write tonight's record in the watch room: what you have found out about what is happening here. Once it is written, you can no longer signal."],
+      ["Pause", "Press ESC to pause. The \"?\" button at the bottom left brings this page back."],
+    ],
+  },
+  ko: {
+    story: [
+      "1984년 11월 14일, 해 질 녘.",
+      "보급선은 당신을 벨모어 섬에 내려놓자마자 폭풍을 피해 뱃머리를 돌렸습니다. 남기고 간 것은 기름통 하나뿐입니다.",
+      "이 등대는 1년 동안 비어 있었습니다. 전임 등대지기 토머스 헤일이 작년 바로 오늘 밤 사라진 뒤로.",
+      "무전기는 낙뢰에 망가졌고, 폭풍은 새벽에 섬에 닿습니다.",
+      "그리고 해가 지자, 바다 위에서 불빛 하나가 등대를 향해 깜빡이기 시작합니다.",
+    ],
+    how: [
+      ["둘러보기", "왼쪽 위의 '이동' 버튼으로 등대 안을 오가고, 물건을 눌러 읽습니다. 당직실 책상에는 전임자들이 남긴 근무 일지가 있습니다."],
+      ["신호 보내기", "꼭대기 등실에서 예나 아니오로 답할 수 있는 질문을 적고 '신호 보내기'를 누릅니다. 배는 불빛으로만 대답합니다. 불빛의 뜻은 왼쪽 위 카드에 있습니다."],
+      ["등유", "신호 한 번에 등유 한 칸이 듭니다. 마지막 빨간 칸은 등불 몫입니다."],
+      ["오늘 밤의 기록", "새벽이 오기 전 당직실에서 오늘 밤의 기록을 씁니다. 이 등대에서 무슨 일이 일어나고 있는지, 알아낸 것을 적으세요. 기록을 쓰면 더는 신호를 보낼 수 없습니다."],
+      ["잠시 멈추기", "ESC를 누르면 멈춥니다. 왼쪽 아래 '?' 버튼으로 이 안내를 다시 볼 수 있습니다."],
+    ],
+  },
+};
 
 // 대답 규칙 카드는 게임 속 소품이라 영어 원문에 번역을 붙인다(docs/04 원칙)
 export const RULE_CARD = {

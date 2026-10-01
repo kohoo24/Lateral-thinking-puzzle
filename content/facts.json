@@ -348,5 +348,12 @@
     "selfRelated": false,
     "en": "The morning after Hale disappeared, the lamp was still lit.",
     "ko": "헤일이 사라진 밤이 지난 아침, 등불은 켜져 있었다"
+  },
+  {
+    "id": 51,
+    "core": null,
+    "selfRelated": false,
+    "en": "Asking the ship its name is dangerous; that is why rule 4 forbids it.",
+    "ko": "배의 이름을 묻는 것은 위험하다(그래서 수칙 4가 금지한다)"
   }
 ]

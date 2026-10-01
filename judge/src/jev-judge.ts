@@ -13,8 +13,10 @@ export const THRESHOLDS = {
   // 명제 판정에서 가장 높은 선택지의 확률이 이보다 낮으면 "신호가 닿지 않음"(등유 반환)
   minTruthConfidence: 0.5,
   selfRelated: 0.5,
-  // 수칙 4 오탐은 0건이 목표라 위반은 더 확실할 때만 인정한다
-  rule4: 0.7,
+  // 수칙 4 오탐은 0건이 목표라 위반은 더 확실할 때만 인정한다.
+  // 2026-10-01 판정 테스트 3회(jev-1.13.0, "이름을 묻는 행위에 대한 질문은 비위반" 규칙 추가 후):
+  // 비위반 최고 0.63(H9 ko), 실제 위반 최저 0.82(H3 ko) → 사이에서 오탐 쪽으로 여유를 둔 0.75
+  rule4: 0.75,
   oathValid: 0.5,
   coreAccepted: 0.5,
 };
@@ -22,21 +24,26 @@ export const THRESHOLDS = {
 const GAME = `${RULES.context}\n${RULES.factsNote}`;
 
 const questionQuestions = {
-  question_type: choice("What kind of question did the player send?", {
-    yes_no: "It can be answered yes or no.",
-    open: "It cannot be answered yes or no.",
-    lie_condition: "It asks about the lie rule itself: whether the ship lies or reverses answers about itself, or whether its answers about itself can be trusted.",
-  }),
+  question_type: choice(
+    "What kind of question did the player send? A question about whether the ship's own answers lie is lie_condition even though it could be answered yes or no.",
+    {
+      yes_no:
+        "It can be answered yes or no. Questions about whether a rule, letter, or document is fake, forged, or genuine are yes_no.",
+      open: "It cannot be answered yes or no: what, who, where, why, or how questions, and requests or commands (뭐야?, 누구야?, 왜?, 어떻게?, 알려줘).",
+      lie_condition:
+        "It asks whether the ship's own answers or light lie, are reversed, or can be trusted (about itself or at all). Not about whether rules or documents are fake.",
+    },
+  ),
   subject: choice(`Who is the question about, after restoring an omitted subject?\n${RULES.omittedSubject}`, {
     ship: "The ship at sea tonight (you, your ship, that ship, the crew as a whole).",
-    person: "A specific named person (Crane, Owen, Tanner, Brooks, Hale, the keeper in 1951).",
+    person: "A specific named person (Crane, Owen, Tanner, Brooks, Hale, the keeper in 1951) as the subject. Not \"Are you <person>?\" addressed to the ship.",
     player: "The player (I, me, we).",
     past_event: "A past event, place, rule, document, or the weather.",
     other: "Anything else.",
   }),
   self_related: noul(`Is the question about the ship itself tonight?\n${RULES.selfRelated}\n${RULES.omittedSubject}`, {
-    true: "It asks about the ship tonight: its identity, name, crew as a whole, intentions, or its own rules.",
-    false: "It asks about a specific person, a past event, the player's survival or actions, or anything else.",
+    true: "It asks about the ship tonight: its identity (including whether anyone aboard it is alive now), name, crew as a whole, intentions, its own actions (what it does or did to people, even in the past, as in \"Did you <do something to> <person>?\"), or its own rules (how the ship behaves; the numbered keeper's rules are lighthouse documents, not the ship's rules). This includes asking the ship whether it is a person (\"Are you <person>?\").",
+    false: "Its subject is a specific person (even with \"you\" elsewhere in the question, as in \"Does <person> sail with you?\"), a past event not done by the ship (including who was aboard, died, or survived in the 1951 sinking), the player's survival or actions, or anything else.",
   }),
   proposition_truth: choice(
     `According to the facts only, is the proposition in the player's question true? Judge the literal proposition before any reversal.\n${RULES.truth}`,
@@ -47,8 +54,8 @@ const questionQuestions = {
     },
   ),
   rule4_violation: noul(`Does the question break the rule "Never ask the ship its name"?\n${RULES.rule4}`, {
-    true: "It asks or confirms the ship's current name with a naming word, or addresses the ship by a person's name.",
-    false: "It does not ask or confirm the ship's current name.",
+    true: "Its answer would be the ship's current name, or would confirm one specific name offered for the ship (with a naming word, or by addressing the ship by a person's name).",
+    false: "It does not request or confirm the ship's name. This includes questions about the rule or about the act of asking the name (why it is forbidden, what happens, whether it is risky).",
   }),
 };
 
@@ -119,9 +126,9 @@ export class JevJudge implements JudgeBackend {
   async submission(text: string): Promise<JudgeCall<SubmissionJudgment>> {
     const started = performance.now();
     const core = (n: 1 | 2 | 3) =>
-      noul(`Following the grading rules, is core ${n} accepted in the report?\n${RULES.submission}`, {
-        true: `The report states core ${n} as one clear claim (hedging allowed).`,
-        false: `Core ${n} is missing, listed among alternatives, mixed with a wrong claim, or contradicted.`,
+      noul(`Following the grading rules, is core ${n} accepted in the report? Judge core ${n} only; ignore how the report handles the other cores.\n${RULES.submission}`, {
+        true: `The report states core ${n} as one clear claim (hedging allowed), even if another core in the report is wrong or listed among alternatives.`,
+        false: `Core ${n} itself is missing, listed among alternatives, mixed with a wrong claim, or contradicted.`,
       });
     const res = await this.client.systemOne({
       state: { game: "A player writes their final report of what happened tonight.", report: text },

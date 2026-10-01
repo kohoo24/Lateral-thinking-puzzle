@@ -2,10 +2,11 @@
 //   npm run judge:test                      전체(영어+한국어)
 //   npm run judge:test -- --lang en --only A,C,H
 //   npm run judge:test -- --mock            API 없이 채점 로직만 확인
+//   npm run judge:test -- --set holdout     별도 검증 세트(docs/09). 결과를 보고 규칙을 고치지 않는다
 import fs from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
-import { judgeTests, contentDir, type QuestionTest } from "./content.js";
+import { judgeTests, holdoutTests, contentDir, type QuestionTest } from "./content.js";
 import { createJudge } from "./backends.js";
 import { costUsd, JudgeUnavailable, type Effort, type Usage } from "./judge.js";
 import { countCores, decideLight, type ShipLight } from "./light.js";
@@ -21,9 +22,17 @@ const { values: args } = parseArgs({
     model: { type: "string" },
     effort: { type: "string" },
     mock: { type: "boolean", default: false },
+    set: { type: "string", default: "main" },
     out: { type: "string", default: path.resolve(contentDir, "../judge/reports") },
   },
 });
+
+if (args.set !== "main" && args.set !== "holdout") {
+  console.error(`알 수 없는 세트: ${args.set} (main, holdout 중 하나)`);
+  process.exit(1);
+}
+const tests = args.set === "holdout" ? holdoutTests : judgeTests;
+const setLabel = args.set === "holdout" ? "별도 검증 세트(docs/09)" : "검증 질문 세트(docs/03)";
 
 const GAME_TIMEOUT_MS = 6000; // docs/05: 6초 안에 판정이 오지 않으면 "신호가 닿지 않음"
 const CALLS_PER_PLAYER = { question: 30, oath: 1, submission: 1 };
@@ -87,7 +96,7 @@ async function pool<T, R>(items: T[], n: number, fn: (t: T) => Promise<R>): Prom
 const concurrency = Number(args.concurrency);
 
 // ---------- 실행 ----------
-const qJobs = judgeTests.questions.filter((q) => want(q.section)).flatMap((q) => langs.map((lang) => ({ q, lang })));
+const qJobs = tests.questions.filter((q) => want(q.section)).flatMap((q) => langs.map((lang) => ({ q, lang })));
 console.error(`[${modelLabel}] 질문 판정 ${qJobs.length}회`);
 const questionRows: QuestionRow[] = await pool(qJobs, concurrency, async ({ q, lang }) => {
   const text = q[lang];
@@ -98,7 +107,7 @@ const questionRows: QuestionRow[] = await pool(qJobs, concurrency, async ({ q, l
   return { id: q.id, section: q.section, group: q.group, lang, text, expected: q, light, judgment: r.result, error: r.error, call: r.call };
 });
 
-const oathJobs = want("I") ? judgeTests.oaths : [];
+const oathJobs = want("I") ? tests.oaths : [];
 console.error(`서약 판정 ${oathJobs.length}회`);
 const oathRows = await pool(oathJobs, concurrency, async (t) => {
   const r = judge
@@ -107,7 +116,7 @@ const oathRows = await pool(oathJobs, concurrency, async (t) => {
   return { t, result: r.result, error: r.error, call: r.call, ok: r.result?.valid === t.expectedValid };
 });
 
-const subJobs = want("J") ? judgeTests.submissions : [];
+const subJobs = want("J") ? tests.submissions : [];
 console.error(`제출 판정 ${subJobs.length}회`);
 const subRows = await pool(subJobs, concurrency, async (t) => {
   const mock: SubmissionJudgment = {
@@ -222,6 +231,7 @@ const warning = allFailed
 const report = `# 판정 테스트 결과
 
 ${warning}- 실행: ${stamp}
+- 세트: ${setLabel}
 - 판정 모델: ${modelLabel}
 - 판정 횟수: 질문 ${questionRows.length}, 서약 ${oathRows.length}, 제출 ${subRows.length}
 - 언어: ${langs.join(", ")}${sections ? `, 구간 ${sections.join(",")}` : ""}
@@ -261,7 +271,7 @@ ${errors.length ? `### 판정 오류\n\n${errors.map((e) => `- ${e.id}: ${e.erro
 `;
 
 fs.mkdirSync(args.out!, { recursive: true });
-const base = path.join(args.out!, `${stamp}-${args.mock ? "mock" : `${args.backend}-${judge!.model}${judge!.effort !== "-" ? `-${judge!.effort}` : ""}`}`);
+const base = path.join(args.out!, `${stamp}-${args.set === "holdout" ? "holdout-" : ""}${args.mock ? "mock" : `${args.backend}-${judge!.model}${judge!.effort !== "-" ? `-${judge!.effort}` : ""}`}`);
 fs.writeFileSync(`${base}.md`, report);
 fs.writeFileSync(`${base}.json`, JSON.stringify({ questionRows, oathRows, subRows }, null, 2));
 console.log(report);

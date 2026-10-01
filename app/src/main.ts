@@ -1,7 +1,7 @@
 // M2: 전체 흐름. 등실의 신호와 대답(M1)에 공간 이동, 단서 문서, 폭풍 시계, 수칙 이벤트,
 // 서약서, 최종 제출, 엔딩 4종을 더한다. 아트는 임시다.
 import "./style.css";
-import { artUrl, TITLE_ART } from "./content/art";
+import { artUrl, PAPER, preloadArt, TITLE_ART } from "./content/art";
 import { HALE_LINES, OATH_FORM, type DocId } from "./content/texts";
 import { dawnProgress, gameClock, nextThreeFlashAt, shouldStartRule6, StormClock, TIMELINE, weatherPhase } from "./core/clock";
 import { endingFor, type Ending } from "./core/endings";
@@ -24,7 +24,7 @@ import {
   type GameState,
   type LogEntry,
 } from "./core/state";
-import { LIGHT_MARK, RULE_CARD, strings, type Strings } from "./i18n";
+import { LIGHT_MARK, RULE_CARD, strings, type Strings, INTRO } from "./i18n";
 import { askJudge, askOath, askSubmission } from "./judge-client";
 import { NoteInput } from "./note";
 import { LampRoomScene } from "./scene";
@@ -94,6 +94,7 @@ function renderStatic() {
   t = strings(lang);
   $("card").innerHTML = RULE_CARD.en.map((l, i) => `<div>${l}</div><div class="ko">${lang === "ko" ? RULE_CARD.ko[i] : ""}</div>`).join("");
   $("gauge-label").textContent = t.kerosene;
+  $("gauge-note").textContent = t.keroseneNote;
   $("log-title").textContent = t.log;
   $("lever-label").textContent = t.lever;
   $("note").dataset.placeholder = t.placeholder;
@@ -101,6 +102,8 @@ function renderStatic() {
   $("register-label").textContent = t.register;
   $<HTMLInputElement>("name").placeholder = t.namePlaceholder;
   $("start-btn").textContent = t.start;
+  $("help-btn").textContent = t.help;
+  $("help-btn").setAttribute("aria-label", t.helpLabel);
   document.documentElement.lang = lang;
   document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach((b) => b.classList.toggle("on", b.dataset.lang === lang));
   rooms.render();
@@ -114,6 +117,8 @@ function renderGauge() {
     );
   }
   [...cells.children].forEach((c, i) => c.classList.toggle("full", i < game.kerosene));
+  $("gauge-count").textContent = `${game.kerosene} / ${KEROSENE_TOTAL}`;
+  $("gauge").setAttribute("aria-label", `${t.kerosene} ${game.kerosene} / ${KEROSENE_TOTAL}. ${t.keroseneNote}`);
   $("lever").classList.toggle("locked", canSignal(game) === "reserve_locked");
 }
 
@@ -362,6 +367,7 @@ function tick() {
   if (!started || record === "done") return;
   clock.tick(dt);
   const ms = clock.elapsed;
+  renderHint();
   scene.setWeather(weatherPhase(ms));
   scene.setDawn(dawnProgress(ms));
   renderDebug();
@@ -512,6 +518,7 @@ function resume() {
   pausedBy = null;
   clock.paused = false;
   $("pause").hidden = true;
+  $("intro").hidden = true;
   lastTick = performance.now();
   setInputEnabled();
 }
@@ -548,18 +555,75 @@ function setupLever() {
 }
 
 // ---------- 시작 ----------
-async function start() {
+// ---------- 지금 할 일(화면 위쪽 한 줄) ----------
+// 일지를 읽기 전에는 당직실로 이끌고, 읽은 뒤에는 잠시 다음 할 일을 알려준 뒤 사라진다.
+// 배에게 대답해야 하는지는 알려주지 않는다(진상).
+const HINT_NEXT_MS = 90_000;
+let hintNextSince: number | null = null;
+
+function renderHint() {
+  let text = "";
+  if (started && record === "none" && !game.over) {
+    if (!found.has("rules")) text = t.hintLog;
+    else {
+      hintNextSince ??= clock.elapsed;
+      if (game.log.length === 0 && clock.elapsed - hintNextSince < HINT_NEXT_MS) text = t.hintNext;
+    }
+  }
+  const hint = $("hint");
+  if (hint.textContent !== text) hint.textContent = text;
+  hint.hidden = !text;
+}
+
+// ---------- 도입: 이야기 → 오늘 밤 할 일 → 등실 ----------
+let introAction: () => void = () => {};
+
+function renderIntro(page: "story" | "how", button: string, action: () => void) {
+  const intro = INTRO[lang];
+  const box = $("intro-page");
+  if (page === "story") {
+    box.replaceChildren(...intro.story.map((line) => el("p", "", line)));
+  } else {
+    const dl = document.createElement("dl");
+    for (const [label, text] of intro.how) dl.append(el("dt", "", label), el("dd", "", text));
+    box.replaceChildren(el("h2", "", t.howTitle), dl);
+  }
+  $("intro-next").textContent = button;
+  introAction = action;
+  $("intro").hidden = false;
+  $("intro-next").focus();
+}
+
+function start() {
   const name = $<HTMLInputElement>("name").value.trim();
   if (!name) return $("name").focus();
+  $("start").hidden = true;
+  renderIntro("story", t.next, () => renderIntro("how", t.climb, () => void begin(name)));
+}
+
+// 당직 중 도움말: 폭풍 시계를 멈추고 "오늘 밤 할 일"을 다시 보여준다
+function showHelp() {
+  if (!started || record === "done" || pausedBy) return;
+  pausedBy = "help";
+  clock.paused = true;
+  setInputEnabled();
+  renderIntro("how", t.helpBack, resume);
+}
+
+async function begin(name: string) {
+  $("intro").hidden = true;
+  $("help-btn").hidden = false;
+  rooms.preload();
+  preloadArt(Object.values(PAPER));
   game = newGame(name, lang);
   sessionId = crypto.randomUUID();
-  $("start").hidden = true;
   started = true;
   lastTick = performance.now();
   renderLog();
   renderGauge();
   renderNoteStage();
   rooms.render();
+  renderHint();
 
   // 배의 첫 신호: 세 번 깜빡임과 다른 불규칙한 짧은 모스(docs/05). 대답은 자유다.
   busy = true;
@@ -585,9 +649,15 @@ async function main() {
       renderStatic();
     }),
   );
-  $("start-btn").addEventListener("click", () => void start());
+  $("start-btn").addEventListener("click", start);
+  $("intro-next").addEventListener("click", () => introAction());
+  $("help-btn").addEventListener("click", showHelp);
   $("name").addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !e.isComposing) void start();
+    // 도입 버튼으로 초점이 옮겨진 뒤 같은 Enter가 그 버튼을 누르지 않도록 막는다
+    if (e.key === "Enter" && !e.isComposing) {
+      e.preventDefault();
+      start();
+    }
   });
   $("record-submit").addEventListener("click", () => void submitRecord());
   $("pause-resume").addEventListener("click", resume);
