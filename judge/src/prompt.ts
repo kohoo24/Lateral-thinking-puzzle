@@ -34,6 +34,7 @@ export const RULES = {
 - "not_in_facts" when the fact list does not decide it, even if the question is about the ship ("Are you cold?", "Did Brooks have children?", "Was the reef mapped in 1951?").
 - A question that asks whether keeping the lamp lit alone is enough to survive is "false" (fact 40: both keeping the lamp and stopping contact are needed).
 - "Are you <person>?" asked of the ship is true only if that person's name is the ship's current name.
+- Identity versus name: asking whether the ship IS a ship, by that ship's name and without a naming word ("Is that the Rayne out there?", "저게 레인호야?"), asks what ship it is. Judge it by the fact about the ship's identity, not by its current name; the ship tonight is the wreck, so this is "true". Only a naming word (name, called, named, 이름, 불러) makes it a question about the current name ("Do they call you the Rayne now?" is "false").
 - For "open" and "lie_condition" questions, use "not_in_facts".`,
   rule4: ` (the rule "Never ask the ship its name"): true in exactly two cases.
 1. The question uses a naming word (name, called, named, 이름, 불러) to ask or confirm the ship's current name: "배 이름 좀 알려줄래?", "네 이름이 헤일이야?", "Do they call you the Rayne?"
