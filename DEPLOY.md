@@ -15,6 +15,7 @@
 3. 값을 물어보면 `TYPESAFE_API_KEY`에 Jev 키를 넣습니다. `LOG_ACCESS_TOKEN`은 자동으로 만들어집니다.
 4. 배포가 끝나면 `https://answer-in-light-xxxx.onrender.com` 같은 주소가 나옵니다. 이 주소가 플레이 링크입니다.
 5. 주소 뒤에 `/healthz`를 붙여 열면 `{"ok":true, ...}`와 오늘 사용량이 보입니다.
+6. 같은 응답의 `client`가 플레이어 주소를 어디서 읽는지 알려줍니다(주소 값은 보이지 않음). `source`가 `header:cf-connecting-ip`이고 `matches`가 모두 `true`면 정상입니다. `false`가 있으면 IP당 제한이 플레이어가 아닌 앞단 주소에 걸리고 있다는 뜻입니다.
 
 이후 이 브랜치에 푸시하면 Render가 자동으로 다시 배포합니다.
 
@@ -29,6 +30,7 @@
 | `SESSIONS_PER_IP_PER_HOUR` | 6 | 한 주소에서 한 시간에 새로 시작할 수 있는 게임 수 |
 | `SESSION_CALL_LIMIT` | 60 | 게임 한 판에서 쓸 수 있는 판정 횟수(신호 24회 + 재시도·서약·제출 여유) |
 | `TRUSTED_PROXY_HOPS` | 1 | 서버 앞의 프록시 수. 플레이어 주소를 `x-forwarded-for` 끝에서 이만큼 센 칸으로 읽습니다(앞 칸은 플레이어가 위조할 수 있음). 프록시 없이 직접 띄우면 0 |
+| `CLIENT_IP_HEADER` | (없음) | 앞단이 실제 접속 주소를 넣어 주는 헤더. 정하면 `x-forwarded-for`보다 먼저 씁니다. Render는 앞에 Cloudflare가 있어 `cf-connecting-ip`로 둡니다(render.yaml). 플레이어가 위조할 수 없는, 앞단이 덮어쓰는 헤더만 적으세요 |
 | `LOG_ACCESS_TOKEN` | (없음) | 플레이 기록 내려받기용 토큰. 16자 이상일 때만 기록 내려받기가 켜집니다 |
 | `JUDGE_LOG_DIR` | `/srv/logs` | 플레이 기록 폴더 |
 | `TYPESAFE_DEFAULT_MODEL` | `jev-latest` | Jev 모델 버전 |

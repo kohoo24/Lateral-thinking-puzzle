@@ -13,5 +13,9 @@ services:
         value: "2000"
       - key: SESSIONS_PER_IP_PER_HOUR
         value: "6"
+      # Render 앞에는 Cloudflare가 있어 x-forwarded-for 끝 칸이 Cloudflare 주소다(배포 후 /healthz 진단으로 확인).
+      # Cloudflare가 덮어쓰는 cf-connecting-ip로 플레이어 주소를 읽는다
+      - key: CLIENT_IP_HEADER
+        value: cf-connecting-ip
       - key: LOG_ACCESS_TOKEN
         generateValue: true
