@@ -347,10 +347,10 @@
       "group": "B4",
       "en": "If I stop signaling, will I be safe?",
       "ko": "신호를 그만 보내면 안전해?",
-      "expectedLight": "yes",
+      "expectedLight": "no",
       "expectedRule4": false,
       "expectedSelfRelated": false,
-      "note": "사실 39"
+      "note": "사실 40, 교신 중단만으로는 부족(등불도 지켜야 함)"
     },
     {
       "id": "B4-2",
@@ -358,10 +358,10 @@
       "group": "B4",
       "en": "Is dawn my way out?",
       "ko": "새벽이 되면 살 수 있어?",
-      "expectedLight": "yes",
+      "expectedLight": "no",
       "expectedRule4": false,
       "expectedSelfRelated": false,
-      "note": "사실 40"
+      "note": "사실 40, 새벽까지 버티는 것만으로는 부족(교신 중단도 필요)"
     },
     {
       "id": "B4-3",
