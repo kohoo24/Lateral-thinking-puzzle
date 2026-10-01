@@ -99,7 +99,13 @@ body:not([data-room="lamp"]) .card { display: none; }
 @keyframes knock { 0%, 70%, 100% { transform: none; } 75% { transform: translateX(-2px); } 80% { transform: translateX(2px); } }
 .hs-record { border-style: dashed; }
 .roomnav { position: absolute; left: 24px; bottom: 96px; display: flex; flex-direction: column; gap: 6px; }
-.roomnav button { background: rgba(10, 10, 10, .7); border: 1px solid #3a342a; color: #cfc6b4; padding: 6px 12px; font-size: 13px; text-align: left; }
+.roomnav button { background: linear-gradient(rgba(58, 44, 24, .92), rgba(28, 21, 12, .92)); border: 1px solid #7a5a2c; color: #f1dcb7; padding: 10px 18px; font-size: 16px; text-align: left; box-shadow: 0 2px 10px rgba(0, 0, 0, .5); cursor: pointer; }
+.roomnav button:hover, .roomnav button:focus-visible { border-color: var(--amber); color: #fff2da; outline: none; }
+.roomnav .arrow { color: var(--amber); margin-right: .55em; }
+/* 한 번도 이동하지 않았으면 이동 버튼이 은은하게 빛난다 */
+.roomnav.unmoved button { animation: navglow 2.4s ease-in-out infinite; }
+@keyframes navglow { 0%, 100% { box-shadow: 0 2px 10px rgba(0, 0, 0, .5); } 50% { box-shadow: 0 0 18px rgba(255, 178, 92, .6); border-color: var(--amber); } }
+@media (prefers-reduced-motion: reduce) { .roomnav.unmoved button { animation: none; border-color: var(--amber); } }
 
 /* ---------- 문서 ---------- */
 .docview { position: fixed; inset: 0; background: rgba(2, 3, 5, .88); z-index: 20; display: flex; flex-direction: column; padding: 16px; gap: 12px; overflow: auto; }
@@ -256,3 +262,13 @@ body.has-foreground[data-room="lamp"] .roomnav { bottom: auto; top: 215px; }
 @media (max-width: 560px) { .intro-page dl { grid-template-columns: 1fr; gap: .2em; } .intro-page dd { margin-bottom: .6em; } }
 .help-btn { position: fixed; left: 16px; bottom: 16px; width: 34px; height: 34px; border-radius: 50%; border: 1px solid #4a4336; background: rgba(18, 16, 13, .72); color: var(--text); font-size: 16px; }
 .help-btn:focus-visible, .intro .primary:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
+/* 지금 할 일 */
+.hint { position: absolute; left: 50%; top: 24px; transform: translateX(-50%); margin: 0; width: max-content; max-width: min(560px, calc(100vw - 32px)); padding: 8px 16px; font-size: 15px; line-height: 1.5; color: #f1dcb7; background: rgba(12, 10, 7, .78); border: 1px solid #4a3b28; text-align: center; word-break: keep-all; pointer-events: none; }
+body:not([data-room="lamp"]) .hint { top: 64px; }
+.hint { z-index: 3; }
+/* 좁은 화면에서는 위쪽이 이동 버튼·방 이름과 겹치므로 아래로 내린다 */
+@media (max-width: 700px) {
+  .hint, body:not([data-room="lamp"]) .hint { top: auto; bottom: 24px; }
+  body[data-room="lamp"] .hint { bottom: 230px; }
+}

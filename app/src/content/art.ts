@@ -59,3 +59,15 @@ export function artUrl(file: string): Promise<string | null> {
   }
   return cache.get(file)!;
 }
+
+// 그림을 미리 내려받아 디코딩해 둔다. 처음 열 때 글씨나 버튼이 먼저 보였다가 그림이 늦게 깔리지 않게 한다.
+export function preloadArt(files: string[]) {
+  for (const file of files) {
+    void artUrl(file).then((url) => {
+      if (!url) return;
+      const img = new Image();
+      img.src = url;
+      void img.decode().catch(() => undefined);
+    });
+  }
+}

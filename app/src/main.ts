@@ -1,7 +1,7 @@
 // M2: 전체 흐름. 등실의 신호와 대답(M1)에 공간 이동, 단서 문서, 폭풍 시계, 수칙 이벤트,
 // 서약서, 최종 제출, 엔딩 4종을 더한다. 아트는 임시다.
 import "./style.css";
-import { artUrl, TITLE_ART } from "./content/art";
+import { artUrl, PAPER, preloadArt, TITLE_ART } from "./content/art";
 import { HALE_LINES, OATH_FORM, type DocId } from "./content/texts";
 import { dawnProgress, gameClock, nextThreeFlashAt, shouldStartRule6, StormClock, TIMELINE, weatherPhase } from "./core/clock";
 import { endingFor, type Ending } from "./core/endings";
@@ -364,6 +364,7 @@ function tick() {
   if (!started || record === "done") return;
   clock.tick(dt);
   const ms = clock.elapsed;
+  renderHint();
   scene.setWeather(weatherPhase(ms));
   scene.setDawn(dawnProgress(ms));
   renderDebug();
@@ -551,6 +552,26 @@ function setupLever() {
 }
 
 // ---------- 시작 ----------
+// ---------- 지금 할 일(화면 위쪽 한 줄) ----------
+// 일지를 읽기 전에는 당직실로 이끌고, 읽은 뒤에는 잠시 다음 할 일을 알려준 뒤 사라진다.
+// 배에게 대답해야 하는지는 알려주지 않는다(진상).
+const HINT_NEXT_MS = 90_000;
+let hintNextSince: number | null = null;
+
+function renderHint() {
+  let text = "";
+  if (started && record === "none" && !game.over) {
+    if (!found.has("rules")) text = t.hintLog;
+    else {
+      hintNextSince ??= clock.elapsed;
+      if (game.log.length === 0 && clock.elapsed - hintNextSince < HINT_NEXT_MS) text = t.hintNext;
+    }
+  }
+  const hint = $("hint");
+  if (hint.textContent !== text) hint.textContent = text;
+  hint.hidden = !text;
+}
+
 // ---------- 도입: 이야기 → 오늘 밤 할 일 → 등실 ----------
 let introAction: () => void = () => {};
 
@@ -589,6 +610,8 @@ function showHelp() {
 async function begin(name: string) {
   $("intro").hidden = true;
   $("help-btn").hidden = false;
+  rooms.preload();
+  preloadArt(Object.values(PAPER));
   game = newGame(name, lang);
   sessionId = crypto.randomUUID();
   started = true;
@@ -597,6 +620,7 @@ async function begin(name: string) {
   renderGauge();
   renderNoteStage();
   rooms.render();
+  renderHint();
 
   // 배의 첫 신호: 세 번 깜빡임과 다른 불규칙한 짧은 모스(docs/05). 대답은 자유다.
   busy = true;
