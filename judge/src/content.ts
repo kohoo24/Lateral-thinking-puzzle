@@ -25,6 +25,7 @@ function load<T>(name: string): T {
 }
 
 export const facts = load<Fact[]>("facts.json");
-export const judgeTests = load<{ questions: QuestionTest[]; oaths: OathTest[]; submissions: SubmissionTest[] }>(
-  "judge-tests.json",
-);
+export type TestSet = { questions: QuestionTest[]; oaths: OathTest[]; submissions: SubmissionTest[] };
+export const judgeTests = load<TestSet>("judge-tests.json");
+// 별도 검증 세트(docs/09): 판정 규칙을 고칠 때 보지 않은 질문. 규칙 수정에 쓰지 않는다.
+export const holdoutTests = load<TestSet>("holdout-tests.json");
