@@ -6,6 +6,12 @@ services:
     # 무료 플랜은 15분 동안 접속이 없으면 잠들어, 깨어나는 동안(약 1분)의 첫 질문이 "신호가 닿지 않음"이 된다
     plan: starter
     healthCheckPath: /healthz
+    # 플레이 기록(JUDGE_LOG_DIR=/srv/logs)이 재배포 뒤에도 남도록 디스크를 붙인다.
+    # 디스크가 있으면 무중단 배포가 꺼져 배포 때 1분 안팎 서버가 내려간다
+    disk:
+      name: play-logs
+      mountPath: /srv/logs
+      sizeGB: 1
     envVars:
       - key: TYPESAFE_API_KEY
         sync: false

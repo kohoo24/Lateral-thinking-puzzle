@@ -26,6 +26,15 @@ export class PlayLog {
     fs.appendFile(path.join(this.dir, `plays-${now.toISOString().slice(0, 10)}.jsonl`), line, () => {});
   }
 
+  // 기록 폴더가 별도 디스크에 있는지(재배포 뒤에도 남는지) 판단한다. 폴더와 부모 폴더의 장치가 다르면 디스크가 붙은 것이다
+  status() {
+    let mounted = false;
+    try {
+      mounted = fs.statSync(this.dir).dev !== fs.statSync(path.dirname(this.dir)).dev;
+    } catch {}
+    return { mounted, files: this.files().length };
+  }
+
   files(): string[] {
     return fs.readdirSync(this.dir).filter((f) => DAY_FILE.test(f)).sort();
   }

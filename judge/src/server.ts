@@ -83,7 +83,7 @@ function authorized(req: http.IncomingMessage): boolean {
 
 function handleGet(req: http.IncomingMessage, res: http.ServerResponse) {
   const url = new URL(req.url ?? "/", "http://x");
-  if (url.pathname === "/healthz") return send(res, 200, { ok: true, model: judge.model, usage: guard.usage(), client: clientDiagnosis(req) });
+  if (url.pathname === "/healthz") return send(res, 200, { ok: true, model: judge.model, usage: guard.usage(), logs: playLog.status(), client: clientDiagnosis(req) });
   if (url.pathname === "/v1/logs" || url.pathname.startsWith("/v1/logs/")) {
     if (!authorized(req)) return send(res, 404, { error: "not found" });
     if (url.pathname === "/v1/logs") return send(res, 200, { files: playLog.files() });
