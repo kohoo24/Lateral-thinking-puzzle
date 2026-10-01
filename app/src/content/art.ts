@@ -14,7 +14,7 @@ export const ROOM_ART: Partial<Record<RoomId, { file: string; hotspots: Partial<
   stairs: { file: "room-stairs.png", hotspots: { door13: [50, 35, 15, 32] } },
   // 봉투는 상자 위에 놓여 있어 클릭 영역이 겹친다. 뒤에 그린 봉투 버튼이 위에 온다
   storeroom: { file: "room-storeroom.png", hotspots: { oathBox: [32, 24, 40, 60], letter: [58, 47, 9, 8], blankOath: [14, 77, 20, 15] } },
-  entrance: { file: "room-entrance.png", hotspots: { register: [8, 35, 22, 20], frontDoor: [60, 15, 26, 70] } },
+  entrance: { file: "room-entrance.png", hotspots: { register: [4, 42, 23, 11], frontDoor: [61, 10, 25, 67] } },
 };
 
 export const PAPER: Record<DocId, string> = {
