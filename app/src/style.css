@@ -243,3 +243,16 @@ body.has-foreground[data-room="lamp"] .roomnav { bottom: auto; top: 215px; }
   background-image: linear-gradient(rgba(236, 228, 208, 0.45), rgba(236, 228, 208, 0.45)), var(--oath-paper);
   background-size: 100% 100%; box-shadow: 0 6px 18px rgba(0, 0, 0, .55);
 }
+
+/* 도입 이야기와 "오늘 밤 할 일" 안내 */
+.overlay.intro { justify-content: safe center; overflow-y: auto; }
+.intro-page { max-width: 34em; text-align: left; color: var(--text); line-height: 1.75; font-size: 16px; word-break: keep-all; overflow-wrap: anywhere; }
+.intro-page p { margin: 0 0 .9em; }
+.intro-page p:first-child { color: var(--amber); letter-spacing: .04em; }
+.intro-page h2 { font-weight: normal; letter-spacing: .08em; color: #efe4cc; margin: 0 0 .8em; text-align: center; }
+.intro-page dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: .7em 1.2em; }
+.intro-page dt { color: var(--amber); }
+.intro-page dd { margin: 0; }
+@media (max-width: 560px) { .intro-page dl { grid-template-columns: 1fr; gap: .2em; } .intro-page dd { margin-bottom: .6em; } }
+.help-btn { position: fixed; left: 16px; bottom: 16px; width: 34px; height: 34px; border-radius: 50%; border: 1px solid #4a4336; background: rgba(18, 16, 13, .72); color: var(--text); font-size: 16px; }
+.help-btn:focus-visible, .intro .primary:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }

@@ -24,7 +24,7 @@ import {
   type GameState,
   type LogEntry,
 } from "./core/state";
-import { LIGHT_MARK, RULE_CARD, strings, type Strings } from "./i18n";
+import { LIGHT_MARK, RULE_CARD, strings, type Strings, INTRO } from "./i18n";
 import { askJudge, askOath, askSubmission } from "./judge-client";
 import { NoteInput } from "./note";
 import { LampRoomScene } from "./scene";
@@ -101,6 +101,8 @@ function renderStatic() {
   $("register-label").textContent = t.register;
   $<HTMLInputElement>("name").placeholder = t.namePlaceholder;
   $("start-btn").textContent = t.start;
+  $("help-btn").textContent = t.help;
+  $("help-btn").setAttribute("aria-label", t.helpLabel);
   document.documentElement.lang = lang;
   document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach((b) => b.classList.toggle("on", b.dataset.lang === lang));
   rooms.render();
@@ -512,6 +514,7 @@ function resume() {
   pausedBy = null;
   clock.paused = false;
   $("pause").hidden = true;
+  $("intro").hidden = true;
   lastTick = performance.now();
   setInputEnabled();
 }
@@ -548,12 +551,46 @@ function setupLever() {
 }
 
 // ---------- 시작 ----------
-async function start() {
+// ---------- 도입: 이야기 → 오늘 밤 할 일 → 등실 ----------
+let introAction: () => void = () => {};
+
+function renderIntro(page: "story" | "how", button: string, action: () => void) {
+  const intro = INTRO[lang];
+  const box = $("intro-page");
+  if (page === "story") {
+    box.replaceChildren(...intro.story.map((line) => el("p", "", line)));
+  } else {
+    const dl = document.createElement("dl");
+    for (const [label, text] of intro.how) dl.append(el("dt", "", label), el("dd", "", text));
+    box.replaceChildren(el("h2", "", t.howTitle), dl);
+  }
+  $("intro-next").textContent = button;
+  introAction = action;
+  $("intro").hidden = false;
+  $("intro-next").focus();
+}
+
+function start() {
   const name = $<HTMLInputElement>("name").value.trim();
   if (!name) return $("name").focus();
+  $("start").hidden = true;
+  renderIntro("story", t.next, () => renderIntro("how", t.climb, () => void begin(name)));
+}
+
+// 당직 중 도움말: 폭풍 시계를 멈추고 "오늘 밤 할 일"을 다시 보여준다
+function showHelp() {
+  if (!started || record === "done" || pausedBy) return;
+  pausedBy = "help";
+  clock.paused = true;
+  setInputEnabled();
+  renderIntro("how", t.helpBack, resume);
+}
+
+async function begin(name: string) {
+  $("intro").hidden = true;
+  $("help-btn").hidden = false;
   game = newGame(name, lang);
   sessionId = crypto.randomUUID();
-  $("start").hidden = true;
   started = true;
   lastTick = performance.now();
   renderLog();
@@ -585,9 +622,15 @@ async function main() {
       renderStatic();
     }),
   );
-  $("start-btn").addEventListener("click", () => void start());
+  $("start-btn").addEventListener("click", start);
+  $("intro-next").addEventListener("click", () => introAction());
+  $("help-btn").addEventListener("click", showHelp);
   $("name").addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !e.isComposing) void start();
+    // 도입 버튼으로 초점이 옮겨진 뒤 같은 Enter가 그 버튼을 누르지 않도록 막는다
+    if (e.key === "Enter" && !e.isComposing) {
+      e.preventDefault();
+      start();
+    }
   });
   $("record-submit").addEventListener("click", () => void submitRecord());
   $("pause-resume").addEventListener("click", resume);
