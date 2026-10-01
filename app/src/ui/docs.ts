@@ -71,7 +71,8 @@ export class DocViewer {
       // 종이 질감 그림이 있으면 깐다(글씨는 그림에 넣지 않고 게임이 쓴다)
       void artUrl(PAPER[id]).then((url) => {
         if (url) {
-          pane.style.backgroundImage = `url("${url}")`;
+          // 그림 위에 옅은 종이색을 한 겹 덮어 작은 글씨(한국어 보조 줄)도 읽히게 한다
+          pane.style.backgroundImage = `linear-gradient(rgba(236, 228, 208, 0.55), rgba(236, 228, 208, 0.55)), url("${url}")`;
           pane.classList.add("on-paper");
         }
       });
