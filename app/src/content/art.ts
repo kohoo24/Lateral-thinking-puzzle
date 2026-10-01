@@ -11,7 +11,7 @@ export const ROOM_ART: Partial<Record<RoomId, { file: string; hotspots: Partial<
     // 확정 그림 기준: 일지(책상 위 가죽 장정), 펜(기록 쓰기), 액자, 벽시계. 일지 맨 뒷장은 일지 안에서 넘긴다
     hotspots: { journal: [11, 72, 27, 12], record: [20, 84, 12, 5], frame: [31, 23, 14, 21], clock: [63, 18, 10, 14] },
   },
-  stairs: { file: "room-stairs.png", hotspots: { door13: [40, 55, 20, 30] } },
+  stairs: { file: "room-stairs.png", hotspots: { door13: [50, 35, 15, 32] } },
   storeroom: { file: "room-storeroom.png", hotspots: { oathBox: [38, 45, 24, 30], letter: [56, 40, 12, 12], blankOath: [22, 72, 18, 14] } },
   entrance: { file: "room-entrance.png", hotspots: { register: [8, 35, 22, 20], frontDoor: [60, 15, 26, 70] } },
 };
