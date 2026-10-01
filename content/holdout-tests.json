@@ -279,12 +279,12 @@
       "id": "B3-2",
       "section": "B",
       "group": "B3",
-      "en": "Is rule 4 in Hale's handwriting?",
-      "ko": "4번 수칙은 헤일 필체야?",
+      "en": "Does Hale's ink appear on rule 4?",
+      "ko": "4번 수칙에 헤일 글씨가 있어?",
       "expectedLight": "no",
       "expectedRule4": false,
       "expectedSelfRelated": false,
-      "note": "사실 23·44"
+      "note": "사실 23·44, 필체 추론"
     },
     {
       "id": "B3-3",
