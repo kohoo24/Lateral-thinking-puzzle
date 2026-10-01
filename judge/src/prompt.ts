@@ -16,10 +16,12 @@ export const RULES = {
 - "player": the player ("I", "me", "we").
 - "past_event": a past event, place, rule, document, or the weather.
 - "other": anything else.`,
-  selfRelated: `true only when the question asks about the ship tonight: its identity (what ship it is, whether anyone aboard is alive), its name, its crew as a whole, its intentions, or its own rules (what three flashes mean, how often it returns, how it reacts). Otherwise false.
+  selfRelated: `true only when the question asks about the ship tonight: its identity (what ship it is, whether anyone aboard is alive), its name, its crew as a whole, its intentions, its own actions (what it does or did to people), or its own rules (what three flashes mean, how often it returns, how it reacts). Otherwise false.
 - A question whose subject is a specific person is never self_related, even if it mentions the ship: "헤일이 그 배에 있니?" and "Did Tanner end up aboard?" are false. "그 배에 등대지기들이 타고 있니?" and "Do dead keepers sail with you?" are true (the crew as a whole).
 - Exception: addressing the ship as "you" and asking whether it is a person ("Are you Tanner?", "너 오웬이야?") is about the ship's identity, not about that person. Subject "ship", self_related true. Its truth is decided by the ship's current name (the fact that names it). This exception covers only "you are <person>". When the person is the one doing or being something ("Does Owen sail with you?", "태너가 너희 배에 탔어?"), the person is the subject and it stays false.
-- Past events are not self_related: "Did the Margaret Rayne hit the reef?" is false, but "Are you the wreck from that storm?" is true.
+- The ship as the actor and a person only as the object ("Did you drag Tanner under?", "네가 오웬을 불러냈어?") asks about the ship's own action: subject "ship", self_related true, even when the action happened in the past. Compare "Did Tanner go out to sea?" (person subject): false.
+- The numbered keeper's rules (rule 1 to rule 5, 1번~5번 수칙) are lighthouse documents, not the ship's own rules. Whether one is real, fake, or who wrote it is false: "Was rule 3 added later?", "1번 수칙은 오래된 거야?". The ship's own rules mean how the ship itself behaves (its flashes, its returns, its reactions).
+- Past events are not self_related unless the ship itself is the actor (see above): "Did the Margaret Rayne hit the reef?" is false, but "Are you the wreck from that storm?" is true.
 - Survival, safety, and what the player should do are not self_related.
 - A question about how the ship's name changes ("Has your name ever been different?") is self_related.`,
   omittedSubject: `Omitted subjects (common in Korean, and when the player's own words were erased): restore the subject from the predicate.
