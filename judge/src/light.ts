@@ -5,8 +5,10 @@ import type { QuestionJudgment } from "./schema.js";
 export type ShipLight = "yes" | "no" | "irrelevant" | "send_again" | "no_reach";
 
 export function decideLight(j: QuestionJudgment): ShipLight {
-  if (j.confidence === "low") return "no_reach";
+  // 질문 종류를 먼저 본다. 열린 질문과 거짓말 조건 질문에는 명제 판정이 없으므로
+  // 확신(Jev는 명제 확률로 정함)이 낮다고 "신호가 닿지 않음"이 되면 안 된다.
   if (j.question_type !== "yes_no") return "send_again";
+  if (j.confidence === "low") return "no_reach";
   if (j.proposition_truth === "not_in_facts") return "irrelevant";
   const truth = j.proposition_truth === "true";
   return truth !== j.self_related ? "yes" : "no";

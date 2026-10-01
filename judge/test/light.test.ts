@@ -33,7 +33,12 @@ test("열린 질문과 거짓말 조건 질문은 다시 보내라", () => {
   assert.equal(decideLight(j({ question_type: "lie_condition", proposition_truth: "not_in_facts" })), "send_again");
 });
 
-test("확신이 낮으면 신호가 닿지 않음(등유 반환, 오염 0)", () => {
+test("열린 질문은 확신이 낮아도 다시 보내라(질문 종류를 먼저 본다)", () => {
+  assert.equal(decideLight(j({ question_type: "open", proposition_truth: "not_in_facts", confidence: "low" })), "send_again");
+  assert.equal(decideLight(j({ question_type: "lie_condition", proposition_truth: "true", confidence: "low" })), "send_again");
+});
+
+test("예/아니오 질문인데 확신이 낮으면 신호가 닿지 않음(등유 반환, 오염 0)", () => {
   const judgment = j({ confidence: "low", self_related: true, rule4_violation: true });
   const light = decideLight(judgment);
   assert.equal(light, "no_reach");
