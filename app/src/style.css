@@ -22,10 +22,14 @@ button { font: inherit; cursor: pointer; }
 }
 .card .ko { color: #5d5445; font-family: "Gowun Batang", serif; font-size: 12px; }
 
-.gauge { position: absolute; left: 24px; bottom: 28px; }
-.gauge-label { font-size: 12px; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
-.cells { display: flex; gap: 3px; }
-.cell { width: 7px; height: 24px; border: 1px solid #4a3b28; background: #110d09; transition: background .4s, box-shadow .4s; }
+.gauge { position: absolute; right: 24px; bottom: 24px; padding: 10px 14px 8px; background: rgba(12, 10, 7, .78); border: 1px solid #4a3b28; box-shadow: 0 2px 10px rgba(0, 0, 0, .5); }
+.gauge-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 7px; }
+.gauge-label { font-size: 15px; letter-spacing: .08em; color: #f1dcb7; }
+.gauge-label::before { content: ""; display: inline-block; width: 9px; height: 13px; margin-right: 8px; background: linear-gradient(#ffd99a, #e08a2e); clip-path: polygon(50% 0, 85% 55%, 70% 100%, 30% 100%, 15% 55%); vertical-align: -1px; box-shadow: 0 0 6px rgba(255, 170, 80, .6); }
+.gauge-count { font-size: 15px; color: var(--amber); font-variant-numeric: tabular-nums; }
+.gauge-note { margin: 6px 0 0; font-size: 12px; color: #b5ab97; word-break: keep-all; }
+.cells { display: flex; gap: 2px; }
+.cell { width: 7px; height: 26px; border: 1px solid #4a3b28; background: #110d09; transition: background .4s, box-shadow .4s; }
 .cell.full { background: linear-gradient(#ffcf8a, #c97a2a); box-shadow: 0 0 6px rgba(255, 170, 80, .35); }
 .cell.reserve { border-color: #b3372c; }
 .cell.reserve.full { background: linear-gradient(#e0735f, #8f2519); }
@@ -219,8 +223,29 @@ body.footsteps .log { box-shadow: inset 0 -30px 40px -30px rgba(70, 110, 160, .3
   aspect-ratio: 3 / 2; width: max(100vw, 150vh); background-size: cover; background-position: center;
 }
 .room.has-art .room-title { position: absolute; top: 24px; left: 50%; transform: translateX(-50%); text-shadow: 0 1px 6px #000; z-index: 1; }
-.hotspot.on-art { position: absolute; min-width: 0; padding: 0; background: transparent; border: 1px solid transparent; color: transparent; transition: border-color .2s, background .2s, color .2s; }
-.hotspot.on-art:hover, .hotspot.on-art:focus-visible { border-color: rgba(255, 178, 92, .6); background: rgba(255, 178, 92, .08); color: #f1dcb7; text-shadow: 0 1px 4px #000; }
+/* 그림 위 소품: 버튼 상자는 눌리지 않고, 안쪽 물건 모양(SVG)만 눌린다. 처음부터 윤곽을 은은하게 보여준다 */
+.hotspot.on-art { position: absolute; min-width: 0; padding: 0; background: none; border: none; color: transparent; pointer-events: none; overflow: visible; }
+.hotspot.on-art:focus-visible { outline: none; }
+.spot-shape { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.spot-shape polygon, .spot-shape ellipse {
+  pointer-events: all; cursor: pointer; vector-effect: non-scaling-stroke;
+  fill: rgba(255, 178, 92, .05); stroke: rgba(255, 196, 120, .42); stroke-width: 1.5px; stroke-linejoin: round;
+  filter: drop-shadow(0 0 3px rgba(255, 170, 80, .45));
+  animation: spotbreath 3.6s ease-in-out infinite; transition: fill .2s, stroke .2s;
+}
+@keyframes spotbreath { 0%, 100% { stroke-opacity: .55; } 50% { stroke-opacity: 1; } }
+.hotspot.on-art:hover .spot-shape > *, .hotspot.on-art:focus-visible .spot-shape > * {
+  fill: rgba(255, 178, 92, .14); stroke: rgba(255, 210, 150, .95); stroke-width: 2px; animation: none;
+  filter: drop-shadow(0 0 7px rgba(255, 170, 80, .8));
+}
+@media (prefers-reduced-motion: reduce) { .spot-shape polygon, .spot-shape ellipse { animation: none; } }
+/* 물건 이름: 가리키거나 키보드로 고르면 물건 아래에 나온다 */
+.spot-label {
+  position: absolute; left: 50%; top: calc(100% + 6px); transform: translateX(-50%); white-space: nowrap;
+  padding: 3px 10px; font-size: 14px; color: #f1dcb7; background: rgba(12, 10, 7, .82); border: 1px solid #4a3b28;
+  opacity: 0; transition: opacity .2s; pointer-events: none;
+}
+.hotspot.on-art:hover .spot-label, .hotspot.on-art:focus-visible .spot-label { opacity: 1; }
 .doc.on-paper { background-size: cover; background-position: center; background-color: transparent; }
 .overlay#start { background-size: cover; background-position: center; }
 .ending-bad { background-size: cover; background-position: center; }
@@ -238,7 +263,7 @@ body:not([data-room="lamp"]) .roomnav { bottom: auto; top: 24px; }
 .ending-bad.with-art .final { position: absolute; left: 0; right: 0; bottom: 6vh; }
 .ending-bad.with-art .deck-register, .ending-bad.with-art .deck-register * { text-shadow: none; }
 /* 등실 전경 소품 그림이 있으면 왼쪽 아래를 신호등이 차지하므로 게이지를 오른쪽 아래로, 이동 버튼을 대답 카드 아래로 */
-body.has-foreground[data-room="lamp"] .gauge { left: auto; right: 24px; }
+
 body.has-foreground[data-room="lamp"] .roomnav { bottom: auto; top: 215px; }
 /* 서약서: 상자에서 꺼낸 양식 여러 장을 어두운 바탕에 나란히 놓는다. 장식 테두리가 잘리지 않게 그림 비율 그대로 깔고 글씨는 테두리 안쪽에 둔다 */
 .doc-oaths.on-oath-forms { background: #1f1c18; }

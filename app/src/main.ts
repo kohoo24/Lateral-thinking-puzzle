@@ -94,6 +94,7 @@ function renderStatic() {
   t = strings(lang);
   $("card").innerHTML = RULE_CARD.en.map((l, i) => `<div>${l}</div><div class="ko">${lang === "ko" ? RULE_CARD.ko[i] : ""}</div>`).join("");
   $("gauge-label").textContent = t.kerosene;
+  $("gauge-note").textContent = t.keroseneNote;
   $("log-title").textContent = t.log;
   $("lever-label").textContent = t.lever;
   $("note").dataset.placeholder = t.placeholder;
@@ -116,6 +117,8 @@ function renderGauge() {
     );
   }
   [...cells.children].forEach((c, i) => c.classList.toggle("full", i < game.kerosene));
+  $("gauge-count").textContent = `${game.kerosene} / ${KEROSENE_TOTAL}`;
+  $("gauge").setAttribute("aria-label", `${t.kerosene} ${game.kerosene} / ${KEROSENE_TOTAL}. ${t.keroseneNote}`);
   $("lever").classList.toggle("locked", canSignal(game) === "reserve_locked");
 }
 

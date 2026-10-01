@@ -1,5 +1,5 @@
 // 등대 안 다섯 곳(docs/07). 등실은 PixiJS 장면이고, 나머지는 아트가 들어오기 전까지 임시 화면으로 그린다.
-import { artUrl, ROOM_ART } from "../content/art";
+import { artUrl, ROOM_ART, shapeBox, type Shape } from "../content/art";
 import type { Strings } from "../i18n";
 import { el } from "./dom";
 
@@ -95,14 +95,19 @@ export class Rooms {
     const stage = el("div", "room-art");
     stage.style.backgroundImage = `url("${url}")`;
     for (const [h, b] of buttons) {
-      const box = art.hotspots[h];
-      if (!box) {
+      const shape = art.hotspots[h];
+      if (!shape) {
         // 그림에 자리가 없는 소품은 감춘다(예: 일지 맨 뒷장은 일지 안에서 넘긴다)
         b.remove();
         continue;
       }
+      const box = shapeBox(shape);
       b.classList.add("on-art");
       Object.assign(b.style, { left: `${box[0]}%`, top: `${box[1]}%`, width: `${box[2]}%`, height: `${box[3]}%` });
+      // 버튼은 감싸는 상자 자리에 두되, 눌리는 곳과 윤곽은 물건 모양을 따른다
+      const label = b.textContent ?? "";
+      b.setAttribute("aria-label", label);
+      b.innerHTML = `${outline(shape, box)}<span class="spot-label">${label}</span>`;
       stage.append(b);
     }
     this.overlay.prepend(stage);
@@ -144,4 +149,15 @@ export class Rooms {
       }),
     );
   }
+}
+
+// 물건 모양을 버튼 안 SVG로 그린다. 좌표는 감싸는 상자 기준 0~100으로 바꾼다
+function outline(shape: Shape, [bx, by, bw, bh]: [number, number, number, number]): string {
+  const sx = (x: number) => (((x - bx) / bw) * 100).toFixed(2);
+  const sy = (y: number) => (((y - by) / bh) * 100).toFixed(2);
+  const body =
+    "ellipse" in shape
+      ? `<ellipse cx="50" cy="50" rx="50" ry="50" />`
+      : `<polygon points="${shape.poly.map(([x, y]) => `${sx(x)},${sy(y)}`).join(" ")}" />`;
+  return `<svg class="spot-shape" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${body}</svg>`;
 }
