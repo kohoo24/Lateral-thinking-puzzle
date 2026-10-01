@@ -35,6 +35,7 @@ export const RULES = {
 - Negative questions: judge the proposition as stated. "그날 밤 불이 안 켜져 있었지?" is "true" because "the light was not on" is true. "Owen didn't survive, did he?" is "false".
 - "not_in_facts" when the fact list does not decide it, even if the question is about the ship ("Are you cold?", "Did Brooks have children?", "Was the reef mapped in 1951?").
 - A question that asks whether keeping the lamp lit alone is enough to survive is "false" (fact 40: both keeping the lamp and stopping contact are needed).
+- "Rule N" alone means the rule as it is written in the log now. For rule 2 that is Hale's forged rule, not Owen's original that was scraped away: "Is rule 2 in Owen's handwriting?" is "false". Only when the question says original, scraped, or before (원래, 지워진, 전에) does it mean Owen's original rule 2: "Did Owen write the original rule 2?" is "true".
 - "Are you <person>?" asked of the ship is true only if that person's name is the ship's current name.
 - Identity versus name: asking whether the ship IS a ship, by that ship's name and without a naming word ("Is that the Rayne out there?", "저게 레인호야?"), asks what ship it is. Judge it by the fact about the ship's identity, not by its current name; the ship tonight is the wreck, so this is "true". Only a naming word (name, called, named, 이름, 불러) makes it a question about the current name ("Do they call you the Rayne now?" is "false").
 - For "open" and "lie_condition" questions, use "not_in_facts".`,
