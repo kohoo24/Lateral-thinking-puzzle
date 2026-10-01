@@ -29,15 +29,28 @@ export const DECK_ART = "deck.png";
 
 const cache = new Map<string, Promise<string | null>>();
 
-// 파일이 실제 이미지로 있으면 주소를, 없으면 null을 돌려준다
+// 파일이 실제 이미지로 있으면 주소를, 없으면 null을 돌려준다.
+// 확장자는 상관없다: 같은 이름의 .webp, .png, .jpg 중 있는 것을 쓴다(ChatGPT 다운로드 형식이 제각각이라서).
+const EXTENSIONS = ["webp", "png", "jpg", "jpeg"];
+
+async function probe(url: string): Promise<boolean> {
+  try {
+    const r = await fetch(url, { method: "HEAD" });
+    return r.ok && (r.headers.get("content-type") ?? "").startsWith("image/");
+  } catch {
+    return false;
+  }
+}
+
 export function artUrl(file: string): Promise<string | null> {
   if (!cache.has(file)) {
-    const url = `${import.meta.env.BASE_URL}art/${file}`;
+    const base = `${import.meta.env.BASE_URL}art/${file.replace(/\.[a-z]+$/i, "")}`;
     cache.set(
       file,
-      fetch(url, { method: "HEAD" })
-        .then((r) => (r.ok && (r.headers.get("content-type") ?? "").startsWith("image/") ? url : null))
-        .catch(() => null),
+      (async () => {
+        for (const ext of EXTENSIONS) if (await probe(`${base}.${ext}`)) return `${base}.${ext}`;
+        return null;
+      })(),
     );
   }
   return cache.get(file)!;

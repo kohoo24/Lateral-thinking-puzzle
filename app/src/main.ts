@@ -622,7 +622,7 @@ async function main() {
     });
   }
   void artUrl(TITLE_ART).then((url) => {
-    if (url) $("start").style.backgroundImage = `linear-gradient(rgba(2,3,5,.55), rgba(2,3,5,.85)), url("${url}")`;
+    if (url) $("start").style.backgroundImage = `linear-gradient(rgba(2,3,5,.3), rgba(2,3,5,.75)), url("${url}")`;
   });
   $("name").focus();
 }
