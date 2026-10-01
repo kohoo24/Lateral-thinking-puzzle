@@ -1,0 +1,6 @@
+.git
+**/node_modules
+app/dist
+app/dist-web
+judge/reports
+judge/logs

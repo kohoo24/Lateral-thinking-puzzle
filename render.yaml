@@ -1,0 +1,17 @@
+# Render 블루프린트(DEPLOY.md 참고). 대시보드에서 New > Blueprint로 이 저장소를 고르면 아래 설정으로 만들어진다.
+services:
+  - type: web
+    name: answer-in-light
+    runtime: docker
+    # 무료 플랜은 15분 동안 접속이 없으면 잠들어, 깨어나는 동안(약 1분)의 첫 질문이 "신호가 닿지 않음"이 된다
+    plan: starter
+    healthCheckPath: /healthz
+    envVars:
+      - key: TYPESAFE_API_KEY
+        sync: false
+      - key: JUDGE_DAILY_CALL_LIMIT
+        value: "2000"
+      - key: SESSIONS_PER_IP_PER_HOUR
+        value: "6"
+      - key: LOG_ACCESS_TOKEN
+        generateValue: true

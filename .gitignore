@@ -2,3 +2,4 @@ node_modules/
 judge/reports/*.json
 app/dist/
 app/dist-web/
+judge/logs/
