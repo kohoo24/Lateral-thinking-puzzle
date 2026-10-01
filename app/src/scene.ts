@@ -1,7 +1,7 @@
 // 등실 장면(PixiJS). 아트가 들어오기 전까지는 그레이디언트와 빛 효과만으로 그린다.
 // 배의 불빛, 우리 신호등, 오염 단계별 변화(docs/05)를 담당한다.
 import { Application, Assets, Container, Graphics, Sprite, Texture, TilingSprite } from "pixi.js";
-import { artUrl } from "./content/art";
+import { artUrl, WRECK_ART } from "./content/art";
 import type { Pulse } from "./core/morse";
 import type { Light } from "./core/state";
 
@@ -113,7 +113,9 @@ export class LampRoomScene {
   private lampSway = 0;
   private echo = 0; // 4단계 수면 반사
   private rain = new Graphics();
-  private silhouette = new Graphics();
+  private silhouette = new Container();
+  private silhouetteShape = new Graphics();
+  private wreck?: Sprite;
   private flashOverlay = new Sprite(Texture.WHITE);
   private dawnOverlay = new Sprite(Texture.WHITE);
   private weather = 0; // 0~4 폭풍 단계
@@ -161,6 +163,7 @@ export class LampRoomScene {
     this.flashOverlay.tint = 0xdfe8ff;
     this.flashOverlay.alpha = 0;
     this.silhouette.alpha = 0;
+    this.silhouette.addChild(this.silhouetteShape);
     world.addChild(
       this.bg,
       this.clouds,
@@ -186,9 +189,26 @@ export class LampRoomScene {
     // elapsedMS는 느린 프레임에서도 잘리지 않은 실제 경과 시간이다
     this.app.ticker.add((t) => this.tick(t.elapsedMS));
     void this.loadForeground();
+    void this.loadWreck();
   }
 
   // 아트(docs/08)가 있으면 등실 전경 소품을 겹친다. 없으면 코드로 그린 난간만 쓴다
+  // 부서진 여객선 실루엣 그림이 있으면 코드로 그린 임시 형체 대신 쓴다
+  private async loadWreck() {
+    const url = await artUrl(WRECK_ART);
+    if (!url) return;
+    try {
+      const tex = await Assets.load<Texture>(url);
+      this.wreck = new Sprite(tex);
+      this.wreck.anchor.set(0.5, 0.97);
+      this.silhouette.addChild(this.wreck);
+      this.silhouetteShape.visible = false;
+      this.drawSilhouette();
+    } catch {
+      // 아트가 아직 없다
+    }
+  }
+
   private async loadForeground() {
     const url = await artUrl("lamp-foreground.png");
     if (!url) return;
@@ -277,7 +297,13 @@ export class LampRoomScene {
   private drawSilhouette() {
     const { x, y } = this.shipPos();
     const u = Math.max(0.6, this.h / 900) * 40;
-    const g = this.silhouette;
+    if (this.wreck) {
+      // 임시 형체와 비슷한 폭(약 8u)으로, 물에 잠긴 선체 아래쪽이 배의 불빛 높이에 오게 둔다. 뱃머리가 오른쪽 창살에 가리지 않게 조금 왼쪽으로 민다
+      this.wreck.scale.set((8.5 * u) / this.wreck.texture.width);
+      this.wreck.position.set(x - 1.2 * u, y + 0.3 * u);
+      return;
+    }
+    const g = this.silhouetteShape;
     g.clear();
     g.poly([x - 4 * u, y, x - 3.2 * u, y - 0.9 * u, x - 1.2 * u, y - 1.1 * u, x - 0.8 * u, y - 2.4 * u, x - 0.4 * u, y - 2.4 * u, x - 0.3 * u, y - 1.2 * u, x + 1.6 * u, y - 1.0 * u, x + 2.2 * u, y - 0.2 * u, x + 3.4 * u, y + 0.4 * u])
       .fill({ color: 0x05070a });

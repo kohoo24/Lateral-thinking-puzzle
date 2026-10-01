@@ -28,6 +28,8 @@ export const PAPER: Record<DocId, string> = {
 
 export const TITLE_ART = "style-anchor.png";
 export const DECK_ART = "deck.png";
+// 번개 칠 때 한 번 드러나는 부서진 여객선(투명 배경)
+export const WRECK_ART = "wreck-silhouette.png";
 
 const cache = new Map<string, Promise<string | null>>();
 
