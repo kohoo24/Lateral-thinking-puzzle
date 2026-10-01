@@ -10,7 +10,7 @@ export const RULES = {
   factsNote: `Every answer is decided by these facts and nothing else. Facts marked [ship-self] are about the ship itself when asked with the ship as the subject.`,
   questionType: `- "yes_no": can be answered yes or no.
 - "open": cannot be answered yes or no ("Where did the smugglers go?", "How many keepers were there?", "왜?").
-- "lie_condition": asks about the lie rule itself, whether the ship lies or reverses answers about itself, or whether its answers about itself can be trusted ("너는 너 자신에 대해 거짓말을 하니?", "Is your light honest when you talk about you?").`,
+- "lie_condition": asks about the lie rule itself, whether the ship lies, deceives, or reverses answers about itself, or whether its answers about itself can be trusted ("네 불빛은 너에 대해선 속이니?", "Is your light honest when you talk about you?"). This takes priority over "yes_no" even though such a question can be answered yes or no. Whether a rule or document is fake or genuine is not a lie_condition question; it is "yes_no".`,
   subject: `- "ship": the ship at sea tonight ("you", "your ship", "that ship", the crew as a whole).
 - "person": a specific named person (Crane, Owen, Tanner, Brooks, Hale, the keeper in 1951) as the subject. "Are you <person>?" addressed to the ship is not "person": its subject is "you", the ship.
 - "player": the player ("I", "me", "we").

@@ -24,11 +24,16 @@ export const THRESHOLDS = {
 const GAME = `${RULES.context}\n${RULES.factsNote}`;
 
 const questionQuestions = {
-  question_type: choice("What kind of question did the player send?", {
-    yes_no: "It can be answered yes or no.",
-    open: "It cannot be answered yes or no.",
-    lie_condition: "It asks about the lie rule itself: whether the ship lies or reverses answers about itself, or whether its answers about itself can be trusted.",
-  }),
+  question_type: choice(
+    "What kind of question did the player send? A question about whether the ship's own answers lie is lie_condition even though it could be answered yes or no.",
+    {
+      yes_no:
+        "It can be answered yes or no. Questions about whether a rule, letter, or document is fake, forged, or genuine are yes_no.",
+      open: "It cannot be answered yes or no: what, who, where, why, or how questions, and requests or commands (뭐야?, 누구야?, 왜?, 어떻게?, 알려줘).",
+      lie_condition:
+        "It asks whether the ship's own answers or light lie, are reversed, or can be trusted (about itself or at all). Not about whether rules or documents are fake.",
+    },
+  ),
   subject: choice(`Who is the question about, after restoring an omitted subject?\n${RULES.omittedSubject}`, {
     ship: "The ship at sea tonight (you, your ship, that ship, the crew as a whole).",
     person: "A specific named person (Crane, Owen, Tanner, Brooks, Hale, the keeper in 1951) as the subject. Not \"Are you <person>?\" addressed to the ship.",
