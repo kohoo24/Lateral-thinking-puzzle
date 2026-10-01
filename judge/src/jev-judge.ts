@@ -31,14 +31,14 @@ const questionQuestions = {
   }),
   subject: choice(`Who is the question about, after restoring an omitted subject?\n${RULES.omittedSubject}`, {
     ship: "The ship at sea tonight (you, your ship, that ship, the crew as a whole).",
-    person: "A specific named person (Crane, Owen, Tanner, Brooks, Hale, the keeper in 1951).",
+    person: "A specific named person (Crane, Owen, Tanner, Brooks, Hale, the keeper in 1951) as the subject. Not \"Are you <person>?\" addressed to the ship.",
     player: "The player (I, me, we).",
     past_event: "A past event, place, rule, document, or the weather.",
     other: "Anything else.",
   }),
   self_related: noul(`Is the question about the ship itself tonight?\n${RULES.selfRelated}\n${RULES.omittedSubject}`, {
-    true: "It asks about the ship tonight: its identity, name, crew as a whole, intentions, or its own rules.",
-    false: "It asks about a specific person, a past event, the player's survival or actions, or anything else.",
+    true: "It asks about the ship tonight: its identity, name, crew as a whole, intentions, or its own rules. This includes asking the ship whether it is a person (\"Are you <person>?\").",
+    false: "Its subject is a specific person (even with \"you\" elsewhere in the question, as in \"Does <person> sail with you?\"), a past event, the player's survival or actions, or anything else.",
   }),
   proposition_truth: choice(
     `According to the facts only, is the proposition in the player's question true? Judge the literal proposition before any reversal.\n${RULES.truth}`,

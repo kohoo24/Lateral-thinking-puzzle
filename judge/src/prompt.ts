@@ -12,12 +12,13 @@ export const RULES = {
 - "open": cannot be answered yes or no ("Where did the smugglers go?", "How many keepers were there?", "왜?").
 - "lie_condition": asks about the lie rule itself, whether the ship lies or reverses answers about itself, or whether its answers about itself can be trusted ("너는 너 자신에 대해 거짓말을 하니?", "Is your light honest when you talk about you?").`,
   subject: `- "ship": the ship at sea tonight ("you", "your ship", "that ship", the crew as a whole).
-- "person": a specific named person (Crane, Owen, Tanner, Brooks, Hale, the keeper in 1951).
+- "person": a specific named person (Crane, Owen, Tanner, Brooks, Hale, the keeper in 1951) as the subject. "Are you <person>?" addressed to the ship is not "person": its subject is "you", the ship.
 - "player": the player ("I", "me", "we").
 - "past_event": a past event, place, rule, document, or the weather.
 - "other": anything else.`,
   selfRelated: `true only when the question asks about the ship tonight: its identity (what ship it is, whether anyone aboard is alive), its name, its crew as a whole, its intentions, or its own rules (what three flashes mean, how often it returns, how it reacts). Otherwise false.
 - A question whose subject is a specific person is never self_related, even if it mentions the ship: "헤일이 그 배에 있니?" and "Did Tanner end up aboard?" are false. "그 배에 등대지기들이 타고 있니?" and "Do dead keepers sail with you?" are true (the crew as a whole).
+- Exception: addressing the ship as "you" and asking whether it is a person ("Are you Tanner?", "너 오웬이야?") is about the ship's identity, not about that person. Subject "ship", self_related true. Its truth is decided by the ship's current name (the fact that names it). This exception covers only "you are <person>". When the person is the one doing or being something ("Does Owen sail with you?", "태너가 너희 배에 탔어?"), the person is the subject and it stays false.
 - Past events are not self_related: "Did the Margaret Rayne hit the reef?" is false, but "Are you the wreck from that storm?" is true.
 - Survival, safety, and what the player should do are not self_related.
 - A question about how the ship's name changes ("Has your name ever been different?") is self_related.`,
@@ -30,6 +31,7 @@ export const RULES = {
 - Negative questions: judge the proposition as stated. "그날 밤 불이 안 켜져 있었지?" is "true" because "the light was not on" is true. "Owen didn't survive, did he?" is "false".
 - "not_in_facts" when the fact list does not decide it, even if the question is about the ship ("Are you cold?", "Did Brooks have children?", "Was the reef mapped in 1951?").
 - A question that asks whether keeping the lamp lit alone is enough to survive is "false" (fact 40: both keeping the lamp and stopping contact are needed).
+- "Are you <person>?" asked of the ship is true only if that person's name is the ship's current name.
 - For "open" and "lie_condition" questions, use "not_in_facts".`,
   rule4: ` (the rule "Never ask the ship its name"): true in exactly two cases.
 1. The question uses a naming word (name, called, named, 이름, 불러) to ask or confirm the ship's current name: "배 이름 좀 알려줄래?", "네 이름이 헤일이야?", "Do they call you the Rayne?"
