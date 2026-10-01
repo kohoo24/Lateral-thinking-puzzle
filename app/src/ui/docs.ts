@@ -48,6 +48,14 @@ export class DocViewer {
     compare.type = "button";
     compare.disabled = this.open.length > 1 || this.found().length < 2;
     compare.addEventListener("click", () => this.render(true));
+    // 근무 일지: 수칙 페이지와 맨 뒷장 사이를 넘긴다
+    if (this.open.length === 1 && (this.open[0] === "rules" || this.open[0] === "memo")) {
+      const toMemo = this.open[0] === "rules";
+      const flip = el("button", "", toMemo ? t.hs_journalBack : t.hs_journal);
+      flip.type = "button";
+      flip.addEventListener("click", () => this.show(toMemo ? "memo" : "rules"));
+      bar.append(flip);
+    }
     const close = el("button", "", t.close);
     close.type = "button";
     close.addEventListener("click", () => this.close());

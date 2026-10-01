@@ -218,3 +218,5 @@ body.footsteps .log { box-shadow: inset 0 -30px 40px -30px rgba(70, 110, 160, .3
 .doc.on-paper { background-size: cover; background-position: center; background-color: transparent; }
 .overlay#start { background-size: cover; background-position: center; }
 .ending-bad { background-size: cover; background-position: center; }
+/* 등실 밖에서는 이동 버튼을 왼쪽 위로(그림 아래쪽 소품을 가리지 않게) */
+body:not([data-room="lamp"]) .roomnav { bottom: auto; top: 24px; }

@@ -61,7 +61,11 @@ export class Rooms {
     stage.style.backgroundImage = `url("${url}")`;
     for (const [h, b] of buttons) {
       const box = art.hotspots[h];
-      if (!box) continue;
+      if (!box) {
+        // 그림에 자리가 없는 소품은 감춘다(예: 일지 맨 뒷장은 일지 안에서 넘긴다)
+        b.remove();
+        continue;
+      }
       b.classList.add("on-art");
       Object.assign(b.style, { left: `${box[0]}%`, top: `${box[1]}%`, width: `${box[2]}%`, height: `${box[3]}%` });
       stage.append(b);
