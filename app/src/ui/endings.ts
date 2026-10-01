@@ -1,4 +1,5 @@
 // 엔딩 4종과 결과 화면(docs/06).
+import { artUrl, DECK_ART } from "../content/art";
 import { ENDING_TEXT, STAGE_NAMES, TEASER } from "../content/texts";
 import type { Ending } from "../core/endings";
 import { toPulses } from "../core/morse";
@@ -68,7 +69,9 @@ export async function playEnding(s: EndingSummary, t: Strings) {
 async function playBad(s: EndingSummary, t: Strings) {
   const L = s.lang;
   const view = screen("ending-bad");
-  view.append(el("div", "deck-light"));
+  const deck = await artUrl(DECK_ART);
+  if (deck) view.style.backgroundImage = `linear-gradient(rgba(2,3,4,.35), rgba(2,3,4,.75)), url("${deck}")`;
+  else view.append(el("div", "deck-light"));
   const caption = el("p", "deck-date", ENDING_TEXT.bad[L][0]);
   const incoming = el("p", "deck-incoming");
   const buttons = el("div", "deck-buttons");

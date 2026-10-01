@@ -1,6 +1,7 @@
 // 등실 장면(PixiJS). 아트가 들어오기 전까지는 그레이디언트와 빛 효과만으로 그린다.
 // 배의 불빛, 우리 신호등, 오염 단계별 변화(docs/05)를 담당한다.
-import { Application, Container, Graphics, Sprite, Texture } from "pixi.js";
+import { Application, Assets, Container, Graphics, Sprite, Texture, TilingSprite } from "pixi.js";
+import { artUrl } from "./content/art";
 import type { Pulse } from "./core/morse";
 import type { Light } from "./core/state";
 
@@ -11,7 +12,7 @@ const LAMP_WARMTH = [0xffae55, 0xffb566, 0xe6c7a4, 0xc9c6c0, 0xa9b0b8];
 const LIE_STRENGTH = [0.55, 0.4, 0.25, 0, 0]; // 3단계부터는 구분할 수 없다
 const SHIP_OFFSET = [0, 0, 0.025, 0.05, 0.08]; // 가까워질수록 수평선 아래로
 const SHIP_SCALE = [1, 1, 1.35, 1.7, 2.1];
-const FOG_ALPHA = [0, 0.07, 0.09, 0.12, 0.15];
+const FOG_ALPHA = [0.08, 0.35, 0.5, 0.65, 0.8]; // 창 가장자리 김 서림
 const VIGNETTE_ALPHA = [0.55, 0.68, 0.78, 0.86, 0.92];
 
 function radialTexture(size: number, stops: [number, string][]): Texture {
@@ -22,6 +23,41 @@ function radialTexture(size: number, stops: [number, string][]): Texture {
   for (const [o, col] of stops) grad.addColorStop(o, col);
   g.fillStyle = grad;
   g.fillRect(0, 0, size, size);
+  return Texture.from(c);
+}
+
+function noiseTexture(size: number): Texture {
+  const c = document.createElement("canvas");
+  c.width = c.height = size;
+  const g = c.getContext("2d")!;
+  const img = g.createImageData(size, size);
+  for (let i = 0; i < img.data.length; i += 4) {
+    const v = Math.random() * 255;
+    img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+    img.data[i + 3] = 255;
+  }
+  g.putImageData(img, 0, 0);
+  return Texture.from(c);
+}
+
+// 부드러운 구름 띠. 가로로 이어 붙여 흘려보낸다
+function cloudTexture(w: number, h: number): Texture {
+  const c = document.createElement("canvas");
+  c.width = w;
+  c.height = h;
+  const g = c.getContext("2d")!;
+  for (let i = 0; i < 140; i++) {
+    const x = Math.random() * w;
+    const y = h * (0.15 + Math.random() * 0.7);
+    const r = 30 + Math.random() * 90;
+    for (const dx of [-w, 0, w]) {
+      const grad = g.createRadialGradient(x + dx, y, 0, x + dx, y, r);
+      grad.addColorStop(0, "rgba(255,255,255,0.10)");
+      grad.addColorStop(1, "rgba(255,255,255,0)");
+      g.fillStyle = grad;
+      g.fillRect(x + dx - r, y - r, r * 2, r * 2);
+    }
+  }
   return Texture.from(c);
 }
 
@@ -85,6 +121,11 @@ export class LampRoomScene {
   private drops: { x: number; y: number; len: number; speed: number }[] = [];
   private silhouetteShown = false;
   private timelines = new Set<Timeline>();
+  private clouds!: TilingSprite;
+  private grain!: TilingSprite;
+  private glass = new Graphics();
+  private glassDrops: { x: number; y: number; r: number; slide: number }[] = [];
+  private foreground: Sprite | null = null;
 
   async init(parent: HTMLElement) {
     await this.app.init({ resizeTo: window, background: 0x030507, antialias: true, autoDensity: true, resolution: window.devicePixelRatio || 1 });
@@ -105,7 +146,14 @@ export class LampRoomScene {
     this.lampGlow.texture = warm;
     this.vignette.texture = dark;
     this.vignette.anchor.set(0.5);
+    // 김 서림은 창 가장자리부터 낀다
+    this.fog.texture = radialTexture(512, [[0, "rgba(255,255,255,0)"], [0.55, "rgba(255,255,255,0)"], [1, "rgba(255,255,255,0.9)"]]);
+    this.fog.anchor.set(0.5);
     this.fog.tint = 0xcfd8e0;
+    this.clouds = new TilingSprite({ texture: cloudTexture(1024, 256), width: 100, height: 100 });
+    this.clouds.tint = 0x56657a;
+    this.grain = new TilingSprite({ texture: noiseTexture(256), width: 100, height: 100 });
+    this.grain.alpha = 0.05;
 
     const world = new Container();
     this.dawnOverlay.tint = 0x8a95a3;
@@ -115,6 +163,7 @@ export class LampRoomScene {
     this.silhouette.alpha = 0;
     world.addChild(
       this.bg,
+      this.clouds,
       this.dawnOverlay,
       this.silhouette,
       this.waves,
@@ -122,11 +171,13 @@ export class LampRoomScene {
       this.shipGlow,
       this.shipCore,
       this.rain,
+      this.glass,
       this.fog,
       this.flashOverlay,
       this.frame,
       this.lampGlow,
       this.vignette,
+      this.grain,
     );
     this.app.stage.addChild(world);
 
@@ -134,6 +185,21 @@ export class LampRoomScene {
     this.app.renderer.on("resize", () => this.layout());
     // elapsedMS는 느린 프레임에서도 잘리지 않은 실제 경과 시간이다
     this.app.ticker.add((t) => this.tick(t.elapsedMS));
+    void this.loadForeground();
+  }
+
+  // 아트(docs/08)가 있으면 등실 전경 소품을 겹친다. 없으면 코드로 그린 난간만 쓴다
+  private async loadForeground() {
+    const url = await artUrl("lamp-foreground.png");
+    if (!url) return;
+    try {
+      const tex = await Assets.load<Texture>(url);
+      this.foreground = new Sprite(tex);
+      this.app.stage.children[0].addChildAt(this.foreground, (this.app.stage.children[0] as Container).getChildIndex(this.lampGlow));
+      this.layout();
+    } catch {
+      // 아트가 아직 없다
+    }
   }
 
   private get w() {
@@ -148,10 +214,22 @@ export class LampRoomScene {
     this.bg.texture = backgroundTexture(w, h);
     this.bg.width = w;
     this.bg.height = h;
-    for (const o of [this.fog, this.flashOverlay]) {
-      o.width = w;
-      o.height = h;
+    this.flashOverlay.width = w;
+    this.flashOverlay.height = h;
+    this.fog.position.set(w / 2, h / 2);
+    this.fog.width = w * 1.25;
+    this.fog.height = h * 1.25;
+    this.clouds.width = w;
+    this.clouds.height = h * 0.45;
+    this.clouds.tileScale.set(Math.max(1, w / 1024), (h * 0.45) / 256);
+    this.grain.width = w;
+    this.grain.height = h;
+    if (this.foreground) {
+      const sc = w / this.foreground.texture.width;
+      this.foreground.scale.set(sc);
+      this.foreground.position.set(0, h - this.foreground.texture.height * sc);
     }
+    this.glassDrops = Array.from({ length: 70 }, () => ({ x: Math.random() * w, y: Math.random() * h * 0.82, r: 1 + Math.random() * 2.2, slide: Math.random() < 0.15 ? 0.01 + Math.random() * 0.03 : 0 }));
     this.dawnOverlay.width = w;
     this.dawnOverlay.height = h * HORIZON;
     this.drawSilhouette();
@@ -162,14 +240,27 @@ export class LampRoomScene {
     this.lampGlow.width = w * 1.3;
     this.lampGlow.height = h * 0.9;
 
-    // 등실 창틀: 세로 창살 두 개와 가로 창살 하나, 아래 난간
+    // 등실 창틀: 세로 창살과 등대 유리창 특유의 비스듬한 창살, 아래 난간.
+    // 등불 쪽(아래)에서 오는 빛이 창살 가장자리에 호박색으로 비친다
     const f = this.frame;
     f.clear();
     const bar = Math.max(10, w * 0.012);
-    for (const x of [w * 0.33, w * 0.67]) f.rect(x - bar / 2, 0, bar, h).fill({ color: 0x0b0d10 });
+    const thin = Math.max(2, bar * 0.18);
+    const xs = [w * 0.33, w * 0.67];
+    const panes = [0, ...xs, w];
+    for (let i = 0; i < panes.length - 1; i++) {
+      const [a, b] = [panes[i], panes[i + 1]];
+      f.moveTo(a, h * 0.18).lineTo(b, h * 0.52).stroke({ width: thin, color: 0x0d0f12, alpha: 0.7 });
+      f.moveTo(b, h * 0.18).lineTo(a, h * 0.52).stroke({ width: thin, color: 0x0d0f12, alpha: 0.7 });
+    }
+    for (const x of xs) {
+      f.rect(x - bar / 2, 0, bar, h).fill({ color: 0x0b0d10 });
+      f.rect(x - bar / 2, h * 0.3, 2, h * 0.52).fill({ color: 0xffb25c, alpha: 0.18 });
+    }
     f.rect(0, h * 0.18, w, bar * 0.8).fill({ color: 0x0b0d10 });
+    f.rect(0, h * 0.52 - thin / 2, w, thin).fill({ color: 0x0d0f12 });
     f.rect(0, h * 0.82, w, h * 0.18).fill({ color: 0x07080a });
-    f.rect(0, h * 0.82, w, 3).fill({ color: 0x2a2520, alpha: 0.8 });
+    f.rect(0, h * 0.82, w, 3).fill({ color: 0x8a5a2a, alpha: 0.45 });
     this.applyStage();
   }
 
@@ -229,6 +320,10 @@ export class LampRoomScene {
     this.lampGlow.x = this.w / 2 + Math.sin(this.time * 7) * this.w * 0.02 * this.lampSway;
 
     this.dawnOverlay.alpha = this.dawn * 0.55;
+    this.clouds.tilePosition.x -= dtMs * (0.004 + this.weather * 0.006);
+    this.clouds.alpha = 0.35 + this.weather * 0.12;
+    this.grain.tilePosition.set(Math.random() * 256, Math.random() * 256);
+    this.drawGlass(dtMs);
     this.bg.tint = lerpColor(0xffffff, 0xc4ccd6, this.dawn);
     this.drawRain(dtMs);
 
@@ -341,6 +436,23 @@ export class LampRoomScene {
   async sway() {
     await this.play(Array.from({ length: 21 }, (_, i) => ({ ms: 60, v: 1 - i / 20 })), (v) => (this.lampSway = v));
     this.lampSway = 0;
+  }
+
+  // 유리창의 빗방울. 등불 빛을 받아 반짝이고, 몇 개는 천천히 흘러내린다
+  private drawGlass(dtMs: number) {
+    const g = this.glass;
+    g.clear();
+    const count = [12, 30, 50, 65, 70][this.weather];
+    for (let i = 0; i < count; i++) {
+      const d = this.glassDrops[i];
+      if (!d) break;
+      if (d.slide) {
+        d.y += d.slide * dtMs;
+        if (d.y > this.h * 0.82) d.y = 0;
+      }
+      g.circle(d.x, d.y, d.r).fill({ color: 0xcfd8e0, alpha: 0.12 });
+      g.circle(d.x - d.r * 0.3, d.y + d.r * 0.3, d.r * 0.35).fill({ color: 0xffd9a0, alpha: 0.25 });
+    }
   }
 
   private drawRain(dtMs: number) {

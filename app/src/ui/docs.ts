@@ -1,4 +1,5 @@
 // 단서 문서 보기와 두 문서 나란히 보기(docs/07: 필체 비교가 핵심 2의 열쇠라 필수).
+import { artUrl, PAPER } from "../content/art";
 import { DOC_TITLES, renderDoc, type DocContext, type DocId } from "../content/texts";
 import type { Strings } from "../i18n";
 import { el } from "./dom";
@@ -59,6 +60,13 @@ export class DocViewer {
       pane.append(el("h2", "doc-title", DOC_TITLES[id][ctx.lang]));
       pane.append(el("div", "doc-body", renderDoc(id, ctx)));
       panes.append(pane);
+      // 종이 질감 그림이 있으면 깐다(글씨는 그림에 넣지 않고 게임이 쓴다)
+      void artUrl(PAPER[id]).then((url) => {
+        if (url) {
+          pane.style.backgroundImage = `url("${url}")`;
+          pane.classList.add("on-paper");
+        }
+      });
     }
     this.root.append(panes);
 

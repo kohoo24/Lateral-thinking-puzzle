@@ -1,4 +1,5 @@
 // 등대 안 다섯 곳(docs/07). 등실은 PixiJS 장면이고, 나머지는 아트가 들어오기 전까지 임시 화면으로 그린다.
+import { artUrl, ROOM_ART } from "../content/art";
 import type { Strings } from "../i18n";
 import { el } from "./dom";
 
@@ -51,23 +52,46 @@ export class Rooms {
     document.body.classList.remove("moving");
   }
 
+  // 그림이 있으면 배경으로 깔고 소품 버튼을 그림 위 제자리에 놓는다
+  private async applyArt(room: RoomId, spots: HTMLElement, buttons: [Hotspot, HTMLButtonElement][]) {
+    const art = ROOM_ART[room];
+    const url = art && (await artUrl(art.file));
+    if (!art || !url || this.current !== room) return;
+    const stage = el("div", "room-art");
+    stage.style.backgroundImage = `url("${url}")`;
+    for (const [h, b] of buttons) {
+      const box = art.hotspots[h];
+      if (!box) continue;
+      b.classList.add("on-art");
+      Object.assign(b.style, { left: `${box[0]}%`, top: `${box[1]}%`, width: `${box[2]}%`, height: `${box[3]}%` });
+      stage.append(b);
+    }
+    this.overlay.prepend(stage);
+    this.overlay.classList.add("has-art");
+    if (!spots.children.length) spots.remove();
+  }
+
   render() {
     const t = this.t();
     const room = this.current;
     document.body.dataset.room = room;
     this.overlay.hidden = room === "lamp";
+    this.overlay.classList.remove("has-art");
     this.overlay.replaceChildren();
     if (room !== "lamp") {
       this.overlay.append(el("h2", "room-title", t[`room_${room}`]));
       const spots = el("div", "hotspots");
+      const buttons: [Hotspot, HTMLButtonElement][] = [];
       for (const h of HOTSPOTS[room]) {
         if (!this.opts.hotspotVisible(h)) continue;
         const b = el("button", `hotspot hs-${h}`, t[`hs_${h}`]);
         b.type = "button";
         b.addEventListener("click", () => this.opts.onHotspot(h));
         spots.append(b);
+        buttons.push([h, b]);
       }
       this.overlay.append(spots);
+      void this.applyArt(room, spots, buttons);
     }
     this.nav.replaceChildren(
       ...LINKS[room].map((to) => {

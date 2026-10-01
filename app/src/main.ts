@@ -1,6 +1,7 @@
 // M2: 전체 흐름. 등실의 신호와 대답(M1)에 공간 이동, 단서 문서, 폭풍 시계, 수칙 이벤트,
 // 서약서, 최종 제출, 엔딩 4종을 더한다. 아트는 임시다.
 import "./style.css";
+import { artUrl, TITLE_ART } from "./content/art";
 import { HALE_LINES, OATH_FORM, type DocId } from "./content/texts";
 import { dawnProgress, gameClock, nextThreeFlashAt, shouldStartRule6, StormClock, TIMELINE, weatherPhase } from "./core/clock";
 import { endingFor, type Ending } from "./core/endings";
@@ -620,6 +621,9 @@ async function main() {
       if (e.key === "F9") clock.elapsed += 5 * 60_000;
     });
   }
+  void artUrl(TITLE_ART).then((url) => {
+    if (url) $("start").style.backgroundImage = `linear-gradient(rgba(2,3,5,.55), rgba(2,3,5,.85)), url("${url}")`;
+  });
   $("name").focus();
 }
 
